@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SportFactory — Pedidos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a; --white: #f5f0e8; --red: #e63329; --red-dark: #b5241c;
+    --gray: #1a1a1a; --gray2: #2a2a2a; --muted: #888; --border: #333;
+    --success: #2ecc71; --warning: #f39c12;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+  nav { display:flex; align-items:center; justify-content:space-between; padding:18px 48px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(10,10,10,.95); backdrop-filter:blur(10px); z-index:100; }
+  .logo { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:4px; }
+  .logo span { color:var(--red); }
+  .nav-tabs { display:flex; gap:4px; }
+  .nav-tab { background:none; border:none; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; padding:8px 18px; border-radius:6px; cursor:pointer; transition:all .2s; }
+  .nav-tab:hover { color:var(--white); background:var(--gray2); }
+  .nav-tab.active { color:var(--white); background:var(--red); }
+  .notif-bell { background:var(--gray2); border:none; color:var(--white); width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; position:relative; display:flex; align-items:center; justify-content:center; transition:background .2s; }
+  .notif-bell:hover { background:var(--red); }
+  .notif-badge { position:absolute; top:-2px; right:-2px; background:var(--red); color:#fff; font-size:9px; font-weight:700; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; font-family:'Space Mono',monospace; }
+
+  .page { display:none; padding:48px; max-width:1100px; margin:0 auto; }
+  .page.active { display:block; }
+
+  .hero { text-align:center; padding:80px 0 60px; }
+  .hero-tag { font-family:'Space Mono',monospace; font-size:11px; color:var(--red); letter-spacing:4px; margin-bottom:16px; text-transform:uppercase; }
+  .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(64px,10vw,110px); line-height:.95; letter-spacing:2px; margin-bottom:20px; }
+  .hero h1 em { color:var(--red); font-style:normal; }
+  .hero p { color:var(--muted); max-width:480px; margin:0 auto 40px; line-height:1.7; font-size:15px; }
+
+  .btn-primary { background:var(--red); color:#fff; border:none; padding:14px 36px; font-family:'Space Mono',monospace; font-size:13px; letter-spacing:1px; cursor:pointer; border-radius:4px; transition:background .2s,transform .1s; display:inline-block; }
+  .btn-primary:hover { background:var(--red-dark); transform:translateY(-1px); }
+
+  .form-card { background:var(--gray); border:1px solid var(--border); border-radius:12px; padding:40px; margin-bottom:32px; }
+  .form-title { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:2px; margin-bottom:8px; }
+  .form-subtitle { color:var(--muted); font-size:13px; margin-bottom:32px; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:1/-1; }
+  label { font-size:11px; font-family:'Space Mono',monospace; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  input, select, textarea { background:var(--black); border:1px solid var(--border); color:var(--white); padding:12px 14px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .2s; }
+  input:focus, select:focus, textarea:focus { border-color:var(--red); }
+  select option { background:var(--gray); }
+  textarea { resize:vertical; min-height:90px; }
+
+  .product-section { margin-top:28px; }
+  .product-section-title { font-family:'Space Mono',monospace; font-size:11px; color:var(--red); letter-spacing:3px; margin-bottom:16px; text-transform:uppercase; }
+  .product-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .product-card { border:1px solid var(--border); border-radius:8px; padding:16px; cursor:pointer; transition:all .2s; position:relative; }
+  .product-card:hover { border-color:var(--muted); }
+  .product-card.selected { border-color:var(--red); background:rgba(230,51,41,.07); }
+  .product-card input[type=checkbox] { display:none; }
+  .product-icon { font-size:28px; margin-bottom:8px; }
+  .product-name { font-weight:600; font-size:13px; margin-bottom:2px; }
+  .product-type { font-size:11px; color:var(--muted); }
+  .check-indicator { position:absolute; top:10px; right:10px; width:18px; height:18px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; transition:all .2s; }
+  .product-card.selected .check-indicator { background:var(--red); border-color:var(--red); color:#fff; }
+  .qty-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px; }
+  .qty-item { display:flex; flex-direction:column; gap:4px; }
+  .qty-item label { font-size:10px; }
+
+  .orders-list { display:flex; flex-direction:column; gap:16px; }
+  .order-row { background:var(--gray); border:1px solid var(--border); border-radius:10px; padding:24px 28px; transition:border-color .2s; }
+  .order-row:hover { border-color:var(--muted); }
+  .order-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .order-id { font-family:'Space Mono',monospace; font-size:13px; color:var(--red); font-weight:700; }
+  .order-client { font-weight:600; font-size:15px; }
+  .order-date { font-size:11px; color:var(--muted); margin-top:2px; font-family:'Space Mono',monospace; }
+  .order-badge { padding:4px 12px; border-radius:100px; font-size:10px; font-family:'Space Mono',monospace; letter-spacing:1px; font-weight:700; }
+  .badge-recibido { background:rgba(52,152,219,.2); color:#3498db; border:1px solid #3498db44; }
+  .badge-proceso { background:rgba(243,156,18,.2); color:var(--warning); border:1px solid #f39c1244; }
+  .badge-terminacion { background:rgba(155,89,182,.2); color:#9b59b6; border:1px solid #9b59b644; }
+  .badge-despacho { background:rgba(46,204,113,.2); color:var(--success); border:1px solid #2ecc7144; }
+
+  .stepper { display:flex; align-items:center; }
+  .step { display:flex; align-items:center; gap:8px; flex:1; }
+  .step:last-child { flex:none; }
+  .step-circle { width:32px; height:32px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; font-family:'Space Mono',monospace; transition:all .3s; flex-shrink:0; background:var(--black); }
+  .step.done .step-circle { background:var(--success); border-color:var(--success); color:#fff; }
+  .step.current .step-circle { background:var(--red); border-color:var(--red); color:#fff; box-shadow:0 0 12px rgba(230,51,41,.4); }
+  .step-info { display:flex; flex-direction:column; }
+  .step-label { font-size:11px; font-weight:600; }
+  .step-desc { font-size:10px; color:var(--muted); }
+  .step-line { flex:1; height:2px; background:var(--border); margin:0 8px; transition:background .3s; border-radius:2px; }
+  .step-line.done { background:var(--success); }
+
+  .order-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; padding-top:16px; border-top:1px solid var(--border); }
+  .order-products { font-size:12px; color:var(--muted); }
+  .advance-btn { background:none; border:1px solid var(--border); color:var(--white); padding:6px 16px; border-radius:6px; font-size:11px; font-family:'Space Mono',monospace; cursor:pointer; transition:all .2s; letter-spacing:.5px; }
+  .advance-btn:hover { border-color:var(--red); color:var(--red); }
+
+  .notif-panel { position:fixed; top:72px; right:48px; width:340px; background:var(--gray); border:1px solid var(--border); border-radius:12px; padding:20px; z-index:200; display:none; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+  .notif-panel.open { display:block; }
+  .notif-title { font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:2px; margin-bottom:14px; text-transform:uppercase; }
+  .notif-item { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .notif-item:last-child { border-bottom:none; }
+  .notif-dot { width:8px; height:8px; border-radius:50%; background:var(--red); flex-shrink:0; margin-top:4px; }
+  .notif-text { font-size:12px; line-height:1.5; }
+  .notif-time { font-size:10px; color:var(--muted); font-family:'Space Mono',monospace; margin-top:2px; }
+
+  .toast { position:fixed; bottom:32px; right:32px; background:var(--gray); border:1px solid var(--red); border-radius:10px; padding:16px 20px; max-width:320px; z-index:300; transform:translateY(80px); opacity:0; transition:all .3s cubic-bezier(.34,1.56,.64,1); pointer-events:none; }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast-title { font-weight:700; font-size:13px; margin-bottom:4px; }
+  .toast-body { font-size:12px; color:var(--muted); line-height:1.5; }
+
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:400; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--gray); border:1px solid var(--border); border-radius:14px; padding:40px; width:90%; max-width:500px; animation:slideUp .3s ease; }
+  @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-icon { font-size:40px; margin-bottom:16px; }
+  .modal-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; margin-bottom:8px; }
+  .modal-body { color:var(--muted); font-size:13px; line-height:1.7; margin-bottom:24px; }
+  .modal-actions { display:flex; gap:12px; }
+  .btn-sec { flex:1; background:none; border:1px solid var(--border); color:var(--white); padding:12px; border-radius:6px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px; transition:all .2s; }
+  .btn-sec:hover { border-color:var(--muted); }
+
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:40px; }
+  .stat-card { background:var(--gray); border:1px solid var(--border); border-radius:10px; padding:20px; }
+  .stat-num { font-family:'Bebas Neue',sans-serif; font-size:44px; line-height:1; margin-bottom:4px; }
+  .stat-label { font-size:11px; color:var(--muted); font-family:'Space Mono',monospace; letter-spacing:1px; }
+
+  .loading { text-align:center; padding:40px; color:var(--muted); font-family:'Space Mono',monospace; font-size:12px; }
+  .spinner { display:inline-block; width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .8s linear infinite; margin-right:8px; vertical-align:middle; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  @media(max-width:768px){
+    nav{padding:14px 20px;} .page{padding:24px 20px;}
+    .form-grid{grid-template-columns:1fr;} .product-grid{grid-template-columns:1fr 1fr;}
+    .qty-row{grid-template-columns:1fr 1fr;} .stats-row{grid-template-columns:1fr 1fr;}
+    .stepper{flex-wrap:wrap;gap:8px;} .step-line{display:none;}
+    .hero h1{font-size:52px;} .notif-panel{right:12px;left:12px;width:auto;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">SPORT<span>FACTORY</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home',this)">Inicio</button>
+    <button class="nav-tab" onclick="showPage('pedido',this)">Nuevo Pedido</button>
+    <button class="nav-tab" onclick="showPage('seguimiento',this)">Mis Pedidos</button>
+    <button class="nav-tab" onclick="goAdmin(this)">Admin</button>
+  </div>
+  <button class="notif-bell" onclick="toggleNotif()" id="bellBtn">
+    🔔<span class="notif-badge" id="notifBadge"></span>
+  </button>
+</nav>
+
+<!-- NOTIF PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-title">Notificaciones</div>
+  <div id="notifList"><p style="font-size:12px;color:var(--muted);">Sin notificaciones</p></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-body" id="toastBody"></div>
+</div>
+
+<!-- PIN MODAL -->
+<div class="modal-overlay" id="pinModal">
+  <div class="modal" style="max-width:380px;text-align:center;">
+    <div class="modal-icon">🔐</div>
+    <div class="modal-title">ÁREA PRIVADA</div>
+    <div class="modal-body">Ingresá el PIN de administrador para acceder al panel de producción.</div>
+    <input type="password" id="pinInput" maxlength="6" placeholder="● ● ● ●"
+      style="text-align:center;font-size:22px;letter-spacing:8px;margin-bottom:8px;width:100%;"
+      onkeydown="if(event.key==='Enter') checkPin()">
+    <div id="pinError" style="display:none;color:var(--red);font-size:12px;font-family:'Space Mono',monospace;margin-bottom:12px;">PIN incorrecto. Intentá de nuevo.</div>
+    <div class="modal-actions">
+      <button class="btn-sec" onclick="closePinModal()">Cancelar</button>
+      <button class="btn-primary" style="flex:2" onclick="checkPin()">→ ENTRAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal" style="text-align:center;">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">¡PEDIDO ENVIADO!</div>
+    <div class="modal-body" id="successBody"></div>
+    <button class="btn-primary" style="width:100%" onclick="closeSuccessModal()">→ VER MI PEDIDO</button>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-tag">Ropa deportiva personalizada</div>
+    <h1>HECHO <em>A TU</em><br>MEDIDA</h1>
+    <p>Pedí tu ropa deportiva desde cero. Te notificamos por email en cada etapa del proceso, desde que recibimos tu orden hasta el despacho.</p>
+    <button class="btn-primary" onclick="showPage('pedido', document.querySelectorAll('.nav-tab')[1])">→ HACER MI PEDIDO</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px;">
+    <div style="background:var(--gray);border:1px solid var(--border);border-radius:10px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">👕</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">TEXTILES</div>
+      <div style="font-size:12px;color:var(--muted);">Camisetas, shorts, licras y más</div>
+    </div>
+    <div style="background:var(--gray);border:1px solid var(--border);border-radius:10px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">🎨</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">IMPRESIÓN</div>
+      <div style="font-size:12px;color:var(--muted);">Sublimación, serigrafía full color</div>
+    </div>
+    <div style="background:var(--gray);border:1px solid var(--border);border-radius:10px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">📢</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">PROMOCIONALES</div>
+      <div style="font-size:12px;color:var(--muted);">Uniformes de equipo y eventos</div>
+    </div>
+    <div style="background:var(--gray);border:1px solid var(--border);border-radius:10px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">⚡</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">ENTREGA 5 DÍAS</div>
+      <div style="font-size:12px;color:var(--muted);">Producción rápida y garantizada</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PEDIDO ══ -->
+<div class="page" id="page-pedido">
+  <div class="form-card">
+    <div class="form-title">NUEVA ORDEN</div>
+    <div class="form-subtitle">Completá todos los campos — te llegará confirmación por email</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre completo</label><input type="text" id="f-nombre" placeholder="Ej: María González"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="tu@email.com"></div>
+      <div class="form-group"><label>Teléfono / WhatsApp</label><input type="tel" id="f-tel" placeholder="+1 809 000 0000"></div>
+      <div class="form-group"><label>Empresa / Equipo (opcional)</label><input type="text" id="f-empresa" placeholder="Ej: Club Deportivo Norte"></div>
+    </div>
+
+    <div class="product-section">
+      <div class="product-section-title">¿Qué necesitás?</div>
+      <div class="product-grid">
+        <label class="product-card" onclick="toggleProduct(this)"><input type="checkbox"><div class="check-indicator">✓</div><div class="product-icon">👕</div><div class="product-name">Camiseta</div><div class="product-type">Textil · Sublimada</div></label>
+        <label class="product-card" onclick="toggleProduct(this)"><input type="checkbox"><div class="check-indicator">✓</div><div class="product-icon">🩳</div><div class="product-name">Short</div><div class="product-type">Textil · Deportivo</div></label>
+        <label class="product-card" onclick="toggleProduct(this)"><input type="checkbox"><div class="check-indicator">✓</div><div class="product-icon">🩱</div><div class="product-name">Licra / Legging</div><div class="product-type">Textil · Compresión</div></label>
+        <label class="product-card" onclick="toggleProduct(this)"><input type="checkbox"><div class="check-indicator">✓</div><div class="product-icon">🧥</div><div class="product-name">Buzo / Hoodie</div><div class="product-type">Textil · Frizado</div></label>
+        <label class="product-card" onclick="toggleProduct(this)"><input type="checkbox"><div class="check-indicator">✓</div><div class="product-icon">🎽</div><div class="product-name">Uniforme Completo</div><div class="product-type">Textil · Kit equipo</div></label>
+        <label class="product-card" onclick="toggleProduct(this)"><input type="checkbox"><div class="check-indicator">✓</div><div class="product-icon">🧢</div><div class="product-name">Gorra / Cap</div><div class="product-type">Promocional</div></label>
+      </div>
+    </div>
+
+    <div class="product-section">
+      <div class="product-section-title">Tallas y cantidades</div>
+      <div class="qty-row">
+        <div class="qty-item"><label>XS</label><input type="number" id="q-xs" min="0" value="0"></div>
+        <div class="qty-item"><label>S</label><input type="number" id="q-s" min="0" value="0"></div>
+        <div class="qty-item"><label>M</label><input type="number" id="q-m" min="0" value="0"></div>
+        <div class="qty-item"><label>L</label><input type="number" id="q-l" min="0" value="0"></div>
+        <div class="qty-item"><label>XL</label><input type="number" id="q-xl" min="0" value="0"></div>
+        <div class="qty-item"><label>XXL</label><input type="number" id="q-xxl" min="0" value="0"></div>
+        <div class="qty-item"><label>3XL</label><input type="number" id="q-3xl" min="0" value="0"></div>
+        <div class="qty-item"><label>Niños</label><input type="number" id="q-kids" min="0" value="0"></div>
+      </div>
+    </div>
+
+    <div class="product-section">
+      <div class="product-section-title">Detalle del pedido</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Colores principales</label><input type="text" id="f-colores" placeholder="Ej: rojo, negro, blanco"></div>
+        <div class="form-group"><label>Tipo de impresión</label>
+          <select id="f-impresion">
+            <option>Sublimación full color</option><option>Serigrafía 1 tinta</option>
+            <option>Serigrafía multicolor</option><option>Bordado</option><option>Sin impresión</option>
+          </select>
+        </div>
+        <div class="form-group full"><label>Especificaciones / Diseño</label><textarea id="f-specs" placeholder="Describí tu diseño: logos, texto, número de jugador, posición de estampado..."></textarea></div>
+        <div class="form-group"><label>Fecha de entrega deseada</label><input type="date" id="f-fecha"></div>
+        <div class="form-group"><label>Presupuesto estimado (RD$)</label><input type="number" id="f-presupuesto" placeholder="Ej: 15000"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <button class="btn-primary" id="submitBtn" onclick="submitOrder()" style="padding:16px 48px;font-size:14px;">→ ENVIAR PEDIDO</button>
+      <span style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">Entrega estimada: 5 días hábiles</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEGUIMIENTO ══ -->
+<div class="page" id="page-seguimiento">
+  <div style="margin-bottom:32px;">
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--red);letter-spacing:3px;margin-bottom:8px;">SEGUIMIENTO DE PEDIDOS</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;">MIS ÓRDENES</h2>
+  </div>
+  <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+    <input type="text" id="searchInput" placeholder="Buscar por nombre o # orden..." style="flex:1;min-width:200px;" oninput="loadOrders()">
+    <select id="filterStatus" onchange="loadOrders()" style="width:160px;">
+      <option value="">Todos los estados</option>
+      <option value="recibido">Recibido</option><option value="proceso">En Proceso</option>
+      <option value="terminacion">Terminación</option><option value="despacho">Despacho</option>
+    </select>
+  </div>
+  <div class="orders-list" id="ordersList"><div class="loading"><span class="spinner"></span>Cargando pedidos...</div></div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div class="page" id="page-admin">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px;">
+    <div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--red);letter-spacing:3px;margin-bottom:8px;">PANEL DE PRODUCCIÓN</div>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;">ADMINISTRACIÓN</h2>
+    </div>
+    <button onclick="lockAdmin()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;transition:all .2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔒 CERRAR SESIÓN</button>
+  </div>
+
+  <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:12px;">EQUIPO ADMINISTRATIVO</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px;">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray);border-radius:8px;border:1px solid var(--border);">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;">SP</div>
+      <div><div style="font-size:13px;font-weight:600;">Saury Perez Mercedes</div><div style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;">Administradora</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray);border-radius:8px;border:1px solid var(--border);">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;">PM</div>
+      <div><div style="font-size:13px;font-weight:600;">Paola Maria Rodriguez</div><div style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;">Administradora</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray);border-radius:8px;border:1px solid var(--border);">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;">AP</div>
+      <div><div style="font-size:13px;font-weight:600;">Angela Peña</div><div style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;">Administradora</div></div>
+    </div>
+  </div>
+
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card"><div class="stat-num red" id="st-total">0</div><div class="stat-label">Total órdenes</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#3498db" id="st-rec">0</div><div class="stat-label">Recibidas</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warning)" id="st-prod">0</div><div class="stat-label">En producción</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--success)" id="st-dep">0</div><div class="stat-label">Despachadas</div></div>
+  </div>
+
+  <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:16px;">ÓRDENES ACTIVAS</div>
+  <div class="orders-list" id="adminOrdersList"><div class="loading"><span class="spinner"></span>Cargando...</div></div>
+</div>
+
+<script>
+const STAGES = ['recibido','proceso','terminacion','despacho'];
+const STAGE_LABELS = { recibido:'Recibido', proceso:'En Proceso', terminacion:'Terminación', despacho:'Despacho' };
+const STAGE_ICONS  = { recibido:'📥', proceso:'⚙️', terminacion:'✅', despacho:'🚚' };
+
+let adminUnlocked = false;
+let adminPinTarget = null;
+let notifications = [];
+
+// ── NAV ──────────────────────────────────────────────
+function showPage(id, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if (tab) tab.classList.add('active');
+  if (id === 'seguimiento') loadOrders();
+  if (id === 'admin') loadAdminOrders();
+  document.getElementById('notifPanel').classList.remove('open');
+}
+function goAdmin(tab) {
+  if (adminUnlocked) { showPage('admin', tab); return; }
+  adminPinTarget = tab;
+  document.getElementById('pinModal').classList.add('open');
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinError').style.display = 'none';
+  setTimeout(() => document.getElementById('pinInput').focus(), 150);
+}
+
+// ── PIN ───────────────────────────────────────────────
+async function checkPin() {
+  const pin = document.getElementById('pinInput').value;
+  // We verify against the server
+  try {
+    const res = await fetch('/api/verify-pin', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({pin})
+    });
+    if (res.ok) {
+      adminUnlocked = true;
+      closePinModal();
+      showPage('admin', adminPinTarget);
+    } else {
+      document.getElementById('pinError').style.display = 'block';
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+    }
+  } catch {
+    document.getElementById('pinError').style.display = 'block';
+  }
+}
+function closePinModal() { document.getElementById('pinModal').classList.remove('open'); }
+function lockAdmin() {
+  adminUnlocked = false;
+  showPage('home', document.querySelectorAll('.nav-tab')[0]);
+  showToast('🔒 Sesión cerrada', 'Panel de administración bloqueado.');
+}
+
+// ── TOAST ────────────────────────────────────────────
+function showToast(title, body) {
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastBody').textContent = body;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4500);
+}
+
+// ── NOTIFS ───────────────────────────────────────────
+function addNotif(title, msg) {
+  notifications.unshift({ title, msg, time: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) });
+  const badge = document.getElementById('notifBadge');
+  badge.textContent = Math.min(notifications.length, 9);
+  badge.style.display = 'flex';
+}
+function toggleNotif() {
+  const panel = document.getElementById('notifPanel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    document.getElementById('notifBadge').style.display = 'none';
+    document.getElementById('notifList').innerHTML = notifications.length
+      ? notifications.slice(0,8).map(n => `
+          <div class="notif-item">
+            <div class="notif-dot" style="background:var(--border)"></div>
+            <div><div class="notif-text"><strong>${n.title}</strong><br>${n.msg}</div>
+            <div class="notif-time">${n.time}</div></div>
+          </div>`).join('')
+      : '<p style="font-size:12px;color:var(--muted);">Sin notificaciones</p>';
+  }
+}
+
+// ── PRODUCTS ─────────────────────────────────────────
+function toggleProduct(card) { card.classList.toggle('selected'); }
+
+// ── SUBMIT ORDER ─────────────────────────────────────
+async function submitOrder() {
+  const nombre = document.getElementById('f-nombre').value.trim();
+  const email  = document.getElementById('f-email').value.trim();
+  if (!nombre || !email) { showToast('⚠️ Campos requeridos', 'Por favor completá nombre y email.'); return; }
+  const prods = [...document.querySelectorAll('.product-card.selected')].map(c => c.querySelector('.product-name').textContent);
+  if (!prods.length) { showToast('⚠️ Seleccioná productos', 'Elegí al menos un producto.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '⏳ Enviando...'; btn.disabled = true;
+
+  const payload = {
+    client: nombre, email,
+    phone: document.getElementById('f-tel').value,
+    empresa: document.getElementById('f-empresa').value,
+    products: prods,
+    qty: { XS:+gv('q-xs'), S:+gv('q-s'), M:+gv('q-m'), L:+gv('q-l'), XL:+gv('q-xl'), XXL:+gv('q-xxl'), '3XL':+gv('q-3xl'), 'Niños':+gv('q-kids') },
+    colors: document.getElementById('f-colores').value,
+    impresion: document.getElementById('f-impresion').value,
+    specs: document.getElementById('f-specs').value,
+    fecha_deseada: document.getElementById('f-fecha').value,
+    presupuesto: document.getElementById('f-presupuesto').value,
+  };
+
+  try {
+    const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if (!res.ok) throw new Error('Error del servidor');
+    const order = await res.json();
+
+    // Reset form
+    document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+    ['f-nombre','f-email','f-tel','f-empresa','f-colores','f-specs','f-presupuesto','f-fecha'].forEach(id => document.getElementById(id).value = '');
+    ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => document.getElementById(id).value = 0);
+
+    addNotif('Pedido '+order.id+' creado', nombre);
+    document.getElementById('successBody').innerHTML = `
+      Tu pedido <strong>${order.id}</strong> fue registrado exitosamente.<br><br>
+      📧 Te enviamos un email de confirmación a <strong>${email}</strong>.<br>
+      Podés seguir el estado de tu orden en la sección <em>Mis Pedidos</em>.`;
+    document.getElementById('successModal').classList.add('open');
+  } catch(e) {
+    showToast('❌ Error', 'No se pudo enviar el pedido. Intentá de nuevo.');
+  } finally {
+    btn.textContent = '→ ENVIAR PEDIDO'; btn.disabled = false;
+  }
+}
+function gv(id) { return document.getElementById(id).value || 0; }
+
+function closeSuccessModal() {
+  document.getElementById('successModal').classList.remove('open');
+  showPage('seguimiento', document.querySelectorAll('.nav-tab')[2]);
+}
+
+// ── ORDER CARD ────────────────────────────────────────
+function orderCard(order, isAdmin) {
+  const si = STAGES.indexOf(order.stage);
+  const steps = STAGES.map((s,i) => `
+    ${i>0 ? `<div class="step-line ${i<=si?'done':''}"></div>` : ''}
+    <div class="step ${i<si?'done':''} ${i===si?'current':''}">
+      <div class="step-circle">${i<si?'✓':i+1}</div>
+      <div class="step-info"><span class="step-label">${STAGE_LABELS[s]}</span><span class="step-desc">${STAGE_ICONS[s]}</span></div>
+    </div>`).join('');
+
+  const qty = typeof order.qty === 'object' ? order.qty : {};
+  const qtyStr = Object.entries(qty).filter(([,v])=>v>0).map(([k,v])=>k+':'+v).join(' · ') || '—';
+  const badge = `<span class="order-badge badge-${order.stage}">${STAGE_LABELS[order.stage].toUpperCase()}</span>`;
+  const advBtn = !isAdmin ? '' : order.stage !== 'despacho'
+    ? `<button class="advance-btn" onclick="advanceOrder('${order.id}')">Avanzar etapa →</button>`
+    : `<span style="font-size:11px;color:var(--success);font-family:'Space Mono',monospace;">✓ ENTREGADO</span>`;
+
+  return `
+  <div class="order-row">
+    <div class="order-header">
+      <div>
+        <div class="order-id">${order.id}${order.empresa?' · '+order.empresa:''}</div>
+        <div class="order-client">${order.client}</div>
+        <div class="order-date">${order.date} · ${order.email}</div>
+      </div>${badge}
+    </div>
+    <div class="stepper">${steps}</div>
+    <div class="order-footer">
+      <div class="order-products">
+        ${(order.products||[]).join(' · ')} &nbsp;|&nbsp; Tallas: ${qtyStr}
+        ${order.colors?' &nbsp;|&nbsp; Colores: '+order.colors:''}
+      </div>${advBtn}
+    </div>
+  </div>`;
+}
+
+// ── LOAD ORDERS ───────────────────────────────────────
+async function loadOrders() {
+  const q = document.getElementById('searchInput')?.value || '';
+  const stage = document.getElementById('filterStatus')?.value || '';
+  const list = document.getElementById('ordersList');
+  list.innerHTML = '<div class="loading"><span class="spinner"></span>Cargando...</div>';
+  try {
+    const res = await fetch(`/api/orders/search?q=${encodeURIComponent(q)}&stage=${stage}`);
+    const orders = await res.json();
+    list.innerHTML = orders.length ? orders.map(o => orderCard(o, false)).join('') : '<p style="color:var(--muted);font-size:13px;">Sin pedidos encontrados.</p>';
+  } catch { list.innerHTML = '<p style="color:var(--muted);">Error cargando pedidos.</p>'; }
+}
+
+async function loadAdminOrders() {
+  const list = document.getElementById('adminOrdersList');
+  list.innerHTML = '<div class="loading"><span class="spinner"></span>Cargando...</div>';
+  try {
+    const res = await fetch('/api/orders');
+    const orders = await res.json();
+    // Update stats
+    document.getElementById('st-total').textContent = orders.length;
+    document.getElementById('st-rec').textContent   = orders.filter(o=>o.stage==='recibido').length;
+    document.getElementById('st-prod').textContent  = orders.filter(o=>o.stage==='proceso'||o.stage==='terminacion').length;
+    document.getElementById('st-dep').textContent   = orders.filter(o=>o.stage==='despacho').length;
+    list.innerHTML = orders.length ? orders.map(o => orderCard(o, true)).join('') : '<p style="color:var(--muted);font-size:13px;">Sin órdenes aún.</p>';
+  } catch { list.innerHTML = '<p style="color:var(--muted);">Error cargando órdenes.</p>'; }
+}
+
+async function advanceOrder(orderId) {
+  const pin = prompt('Confirmá con tu PIN de admin:');
+  if (!pin) return;
+  try {
+    const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/advance`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pin})
+    });
+    if (!res.ok) { showToast('❌ Error', 'PIN incorrecto o error del servidor.'); return; }
+    const order = await res.json();
+    addNotif(orderId+' → '+STAGE_LABELS[order.stage], order.client+' — Email enviado ✓');
+    showToast('✅ Etapa avanzada', `${orderId} → ${STAGE_LABELS[order.stage]} · Email enviado a ${order.email}`);
+    loadAdminOrders();
+  } catch { showToast('❌ Error', 'No se pudo avanzar la etapa.'); }
+}
+
+// close panels on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('#notifPanel') && !e.target.closest('#bellBtn'))
+    document.getElementById('notifPanel').classList.remove('open');
+});
+</script>
+</body>
+</html>
