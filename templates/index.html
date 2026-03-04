@@ -238,12 +238,12 @@
     <div class="product-section">
       <div class="product-section-title">¿Qué necesitás?</div>
       <div class="product-grid">
-        <div class="product-card" onclick="toggleProduct(this)"><div class="check-indicator">✓</div><div class="product-icon">👕</div><div class="product-name">Camiseta</div><div class="product-type">Textil · Sublimada</div></div>
-        <div class="product-card" onclick="toggleProduct(this)"><div class="check-indicator">✓</div><div class="product-icon">🩳</div><div class="product-name">Short</div><div class="product-type">Textil · Deportivo</div></div>
-        <div class="product-card" onclick="toggleProduct(this)"><div class="check-indicator">✓</div><div class="product-icon">🩱</div><div class="product-name">Licra / Legging</div><div class="product-type">Textil · Compresión</div></div>
-        <div class="product-card" onclick="toggleProduct(this)"><div class="check-indicator">✓</div><div class="product-icon">🧥</div><div class="product-name">Buzo / Hoodie</div><div class="product-type">Textil · Frizado</div></div>
-        <div class="product-card" onclick="toggleProduct(this)"><div class="check-indicator">✓</div><div class="product-icon">🎽</div><div class="product-name">Uniforme Completo</div><div class="product-type">Textil · Kit equipo</div></div>
-        <div class="product-card" onclick="toggleProduct(this)"><div class="check-indicator">✓</div><div class="product-icon">🧢</div><div class="product-name">Gorra / Cap</div><div class="product-type">Promocional</div></div>
+        <div class="product-card" onclick="toggleProduct(this)" data-price="650"><div class="check-indicator">✓</div><div class="product-icon">👕</div><div class="product-name">Camiseta</div><div class="product-type">Textil · Sublimada</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$650 c/u</div></div>
+        <div class="product-card" onclick="toggleProduct(this)" data-price="900"><div class="check-indicator">✓</div><div class="product-icon">🩳</div><div class="product-name">Short</div><div class="product-type">Textil · Deportivo</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$900 c/u</div></div>
+        <div class="product-card" onclick="toggleProduct(this)" data-price="1400"><div class="check-indicator">✓</div><div class="product-icon">🩱</div><div class="product-name">Licra / Legging</div><div class="product-type">Textil · Compresión</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$1,400 c/u</div></div>
+        <div class="product-card" onclick="toggleProduct(this)" data-price="1500"><div class="check-indicator">✓</div><div class="product-icon">🧥</div><div class="product-name">Buzo / Hoodie</div><div class="product-type">Textil · Frizado</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$1,500 c/u</div></div>
+        <div class="product-card" onclick="toggleProduct(this)" data-price="2000"><div class="check-indicator">✓</div><div class="product-icon">🎽</div><div class="product-name">Uniforme Completo</div><div class="product-type">Textil · Kit equipo</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$2,000 c/u</div></div>
+        <div class="product-card" onclick="toggleProduct(this)" data-price="800"><div class="check-indicator">✓</div><div class="product-icon">🧢</div><div class="product-name">Gorra / Cap</div><div class="product-type">Promocional</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$800 c/u</div></div>
       </div>
     </div>
 
@@ -283,6 +283,26 @@
     <div style="margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
       <button class="btn-primary" id="submitBtn" onclick="submitOrder()" style="padding:16px 48px;font-size:14px;">→ ENVIAR PEDIDO</button>
       <span style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">Entrega estimada: 5 días hábiles</span>
+    </div>
+
+    <!-- TOTAL Y PAGO -->
+    <div id="totalSection" style="display:none;margin-top:24px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div style="background:var(--gray2);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;">TOTAL ESTIMADO</span>
+        <span id="totalAmount" style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);">RD$0</span>
+      </div>
+      <div style="padding:20px;background:rgba(46,204,113,.05);border-top:1px solid var(--border);">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--success);letter-spacing:2px;margin-bottom:12px;">💳 DATOS PARA TRANSFERENCIA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">
+          <div><span style="color:var(--muted);">Banco:</span> <strong>Banreservas</strong></div>
+          <div><span style="color:var(--muted);">Tipo:</span> <strong>Cuenta Corriente</strong></div>
+          <div><span style="color:var(--muted);">Número:</span> <strong>4258470010</strong></div>
+          <div><span style="color:var(--muted);">A nombre de:</span> <strong>SportFactory</strong></div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:rgba(230,51,41,.08);border-radius:6px;font-size:11px;color:var(--muted);">
+          ⚠️ El total es estimado según cantidad de prendas. Podría variar según especificaciones del diseño.
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -447,7 +467,38 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── PRODUCTS ─────────────────────────────────────────
-function toggleProduct(card) { card.classList.toggle('selected'); }
+function toggleProduct(card) {
+  card.classList.toggle('selected');
+  updateTotal();
+}
+
+function updateTotal() {
+  const selectedCards = [...document.querySelectorAll('.product-card.selected')];
+  if (!selectedCards.length) {
+    document.getElementById('totalSection').style.display = 'none';
+    return;
+  }
+  // Get total qty
+  const totalQty = ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids']
+    .reduce((sum, id) => sum + (+document.getElementById(id).value || 0), 0);
+  const qty = totalQty || 1;
+
+  // Average price of selected products
+  const avgPrice = selectedCards.reduce((sum, c) => sum + (+c.dataset.price || 0), 0) / selectedCards.length;
+  const total = Math.round(avgPrice * qty);
+
+  document.getElementById('totalAmount').textContent = 'RD$' + total.toLocaleString('es-DO');
+  document.getElementById('totalSection').style.display = 'block';
+}
+
+// Update total when qty changes
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('fechaEntrega');
+  if (el) el.textContent = calcDeliveryDate();
+  ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateTotal);
+  });
+});
 
 // ── SUBMIT ORDER ─────────────────────────────────────
 async function submitOrder() {
