@@ -233,7 +233,6 @@
       <div class="form-group"><label>Nombre completo</label><input type="text" id="f-nombre" placeholder="Ej: María González"></div>
       <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="tu@email.com"></div>
       <div class="form-group"><label>Teléfono / WhatsApp</label><input type="tel" id="f-tel" placeholder="+1 809 000 0000"></div>
-      <div class="form-group"><label>Empresa / Equipo (opcional)</label><input type="text" id="f-empresa" placeholder="Ej: Club Deportivo Norte"></div>
     </div>
 
     <div class="product-section">
@@ -273,8 +272,11 @@
           </select>
         </div>
         <div class="form-group full"><label>Especificaciones / Diseño</label><textarea id="f-specs" placeholder="Describí tu diseño: logos, texto, número de jugador, posición de estampado..."></textarea></div>
-        <div class="form-group"><label>Fecha de entrega deseada</label><input type="date" id="f-fecha"></div>
-        <div class="form-group"><label>Presupuesto estimado (RD$)</label><input type="number" id="f-presupuesto" placeholder="Ej: 15000"></div>
+        <div class="form-group full" style="background:rgba(46,204,113,.07);border:1px solid #2ecc7144;border-radius:8px;padding:14px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--success);letter-spacing:1px;margin-bottom:4px;">📅 FECHA DE ENTREGA ESTIMADA</div>
+          <div id="fechaEntrega" style="font-size:15px;font-weight:600;"></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">5 días hábiles desde hoy</div>
+        </div>
       </div>
     </div>
 
@@ -429,6 +431,21 @@ function toggleNotif() {
   }
 }
 
+// ── DELIVERY DATE CALC ───────────────────────────────
+function calcDeliveryDate() {
+  const d = new Date();
+  let days = 0;
+  while (days < 5) {
+    d.setDate(d.getDate() + 1);
+    if (d.getDay() !== 0 && d.getDay() !== 6) days++;
+  }
+  return d.toLocaleDateString('es-DO', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('fechaEntrega');
+  if (el) el.textContent = calcDeliveryDate();
+});
+
 // ── PRODUCTS ─────────────────────────────────────────
 function toggleProduct(card) { card.classList.toggle('selected'); }
 
@@ -443,17 +460,19 @@ async function submitOrder() {
   const btn = document.getElementById('submitBtn');
   btn.textContent = '⏳ Enviando...'; btn.disabled = true;
 
+  const fechaEntrega = calcDeliveryDate();
+
   const payload = {
     client: nombre, email,
     phone: document.getElementById('f-tel').value,
-    empresa: document.getElementById('f-empresa').value,
+    empresa: '',
     products: prods,
     qty: { XS:+gv('q-xs'), S:+gv('q-s'), M:+gv('q-m'), L:+gv('q-l'), XL:+gv('q-xl'), XXL:+gv('q-xxl'), '3XL':+gv('q-3xl'), 'Niños':+gv('q-kids') },
     colors: document.getElementById('f-colores').value,
     impresion: document.getElementById('f-impresion').value,
     specs: document.getElementById('f-specs').value,
-    fecha_deseada: document.getElementById('f-fecha').value,
-    presupuesto: document.getElementById('f-presupuesto').value,
+    fecha_deseada: fechaEntrega,
+    presupuesto: '',
   };
 
   try {
@@ -463,13 +482,14 @@ async function submitOrder() {
 
     // Reset form
     document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
-    ['f-nombre','f-email','f-tel','f-empresa','f-colores','f-specs','f-presupuesto','f-fecha'].forEach(id => document.getElementById(id).value = '');
+    ['f-nombre','f-email','f-tel','f-colores','f-specs'].forEach(id => document.getElementById(id).value = '');
     ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => document.getElementById(id).value = 0);
 
     addNotif('Pedido '+order.id+' creado', nombre);
     document.getElementById('successBody').innerHTML = `
       Tu pedido <strong>${order.id}</strong> fue registrado exitosamente.<br><br>
-      📧 Te enviamos un email de confirmación a <strong>${email}</strong>.<br>
+      📧 Te enviamos un email de confirmación a <strong>${email}</strong>.<br><br>
+      📅 Fecha estimada de entrega: <strong>${fechaEntrega}</strong><br><br>
       Podés seguir el estado de tu orden en la sección <em>Mis Pedidos</em>.`;
     document.getElementById('successModal').classList.add('open');
   } catch(e) {
