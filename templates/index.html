@@ -185,10 +185,10 @@
 <!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="successModal">
   <div class="modal" style="text-align:center;">
-    <div class="modal-icon">✅</div>
-    <div class="modal-title">¡PEDIDO ENVIADO!</div>
+    <div class="modal-icon" style="font-size:60px;">🎉</div>
+    <div class="modal-title" style="color:var(--success);font-size:36px;">¡PEDIDO LISTO!</div>
     <div class="modal-body" id="successBody"></div>
-    <button class="btn-primary" style="width:100%" onclick="closeSuccessModal()">→ VER MI PEDIDO</button>
+    <button class="btn-primary" style="width:100%;background:var(--success);" onclick="closeSuccessModal()">→ VER MI PEDIDO</button>
   </div>
 </div>
 
@@ -476,7 +476,10 @@ async function submitOrder() {
   };
 
   try {
-    const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal: controller.signal });
+    clearTimeout(timeout);
     if (!res.ok) throw new Error('Error del servidor');
     const order = await res.json();
 
