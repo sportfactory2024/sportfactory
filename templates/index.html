@@ -153,13 +153,11 @@
   </button>
 </nav>
 
-<!-- NOTIF PANEL -->
 <div class="notif-panel" id="notifPanel">
   <div class="notif-title">Notificaciones</div>
   <div id="notifList"><p style="font-size:12px;color:var(--muted);">Sin notificaciones</p></div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-title" id="toastTitle"></div>
   <div class="toast-body" id="toastBody"></div>
@@ -170,11 +168,11 @@
   <div class="modal" style="max-width:380px;text-align:center;">
     <div class="modal-icon">🔐</div>
     <div class="modal-title">ÁREA PRIVADA</div>
-    <div class="modal-body">Ingresá el PIN de administrador para acceder al panel de producción.</div>
+    <div class="modal-body">Ingresa el PIN de administrador para acceder al panel de producción.</div>
     <input type="password" id="pinInput" maxlength="6" placeholder="● ● ● ●"
       style="text-align:center;font-size:22px;letter-spacing:8px;margin-bottom:8px;width:100%;"
       onkeydown="if(event.key==='Enter') checkPin()">
-    <div id="pinError" style="display:none;color:var(--red);font-size:12px;font-family:'Space Mono',monospace;margin-bottom:12px;">PIN incorrecto. Intentá de nuevo.</div>
+    <div id="pinError" style="display:none;color:var(--red);font-size:12px;font-family:'Space Mono',monospace;margin-bottom:12px;">PIN incorrecto. Intenta de nuevo.</div>
     <div class="modal-actions">
       <button class="btn-sec" onclick="closePinModal()">Cancelar</button>
       <button class="btn-primary" style="flex:2" onclick="checkPin()">→ ENTRAR</button>
@@ -192,13 +190,13 @@
   </div>
 </div>
 
-<!-- ══ HOME ══ -->
+<!-- HOME -->
 <div class="page active" id="page-home">
   <div class="hero">
     <div class="hero-tag">Ropa deportiva personalizada</div>
     <h1>HECHO <em>A TU</em><br>MEDIDA</h1>
-    <p>Pedí tu ropa deportiva desde cero. Te notificamos por email en cada etapa del proceso, desde que recibimos tu orden hasta el despacho.</p>
-    <button class="btn-primary" onclick="showPage('pedido', document.querySelectorAll('.nav-tab')[1])">→ HACER MI PEDIDO</button>
+    <p>Pide tu ropa deportiva desde cero. Te avisamos por email en cada etapa del proceso, desde que recibimos tu orden hasta el despacho.</p>
+    <button class="btn-primary" onclick="showPage('pedido', document.querySelectorAll('.nav-tab')[1])">→ HAZ TU PEDIDO</button>
   </div>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px;">
     <div style="background:var(--gray);border:1px solid var(--border);border-radius:10px;padding:24px;text-align:center;">
@@ -224,11 +222,11 @@
   </div>
 </div>
 
-<!-- ══ PEDIDO ══ -->
+<!-- PEDIDO -->
 <div class="page" id="page-pedido">
   <div class="form-card">
     <div class="form-title">NUEVA ORDEN</div>
-    <div class="form-subtitle">Completá todos los campos — te llegará confirmación por email</div>
+    <div class="form-subtitle">Completa todos los campos — te va a llegar una confirmación por email</div>
     <div class="form-grid">
       <div class="form-group"><label>Nombre completo</label><input type="text" id="f-nombre" placeholder="Ej: María González"></div>
       <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="tu@email.com"></div>
@@ -236,7 +234,7 @@
     </div>
 
     <div class="product-section">
-      <div class="product-section-title">¿Qué necesitás?</div>
+      <div class="product-section-title">¿Qué necesitas?</div>
       <div class="product-grid">
         <div class="product-card" onclick="toggleProduct(this)" data-price="650"><div class="check-indicator">✓</div><div class="product-icon">👕</div><div class="product-name">Camiseta</div><div class="product-type">Textil · Sublimada</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$650 c/u</div></div>
         <div class="product-card" onclick="toggleProduct(this)" data-price="900"><div class="check-indicator">✓</div><div class="product-icon">🩳</div><div class="product-name">Short</div><div class="product-type">Textil · Deportivo</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$900 c/u</div></div>
@@ -271,7 +269,7 @@
             <option>Serigrafía multicolor</option><option>Bordado</option><option>Sin impresión</option>
           </select>
         </div>
-        <div class="form-group full"><label>Especificaciones / Diseño</label><textarea id="f-specs" placeholder="Describí tu diseño: logos, texto, número de jugador, posición de estampado..."></textarea></div>
+        <div class="form-group full"><label>Especificaciones / Diseño</label><textarea id="f-specs" placeholder="Describe tu diseño: logos, texto, número de jugador, posición del estampado..."></textarea></div>
         <div class="form-group full" style="background:rgba(46,204,113,.07);border:1px solid #2ecc7144;border-radius:8px;padding:14px;">
           <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--success);letter-spacing:1px;margin-bottom:4px;">📅 FECHA DE ENTREGA ESTIMADA</div>
           <div id="fechaEntrega" style="font-size:15px;font-weight:600;"></div>
@@ -285,7 +283,6 @@
       <span style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">Entrega estimada: 5 días hábiles</span>
     </div>
 
-    <!-- TOTAL Y PAGO -->
     <div id="totalSection" style="display:none;margin-top:24px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
       <div style="background:var(--gray2);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;">TOTAL ESTIMADO</span>
@@ -300,14 +297,14 @@
           <div><span style="color:var(--muted);">A nombre de:</span> <strong>SportFactory</strong></div>
         </div>
         <div style="margin-top:12px;padding:10px;background:rgba(230,51,41,.08);border-radius:6px;font-size:11px;color:var(--muted);">
-          ⚠️ El total es estimado según cantidad de prendas. Podría variar según especificaciones del diseño.
+          ⚠️ El total es estimado según la cantidad de prendas. Puede variar según las especificaciones del diseño.
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ SEGUIMIENTO ══ -->
+<!-- SEGUIMIENTO -->
 <div class="page" id="page-seguimiento">
   <div style="margin-bottom:32px;">
     <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--red);letter-spacing:3px;margin-bottom:8px;">SEGUIMIENTO DE PEDIDOS</div>
@@ -324,7 +321,7 @@
   <div class="orders-list" id="ordersList"><div class="loading"><span class="spinner"></span>Cargando pedidos...</div></div>
 </div>
 
-<!-- ══ ADMIN ══ -->
+<!-- ADMIN -->
 <div class="page" id="page-admin">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px;">
     <div>
@@ -370,7 +367,6 @@ let adminUnlocked = false;
 let adminPinTarget = null;
 let notifications = [];
 
-// ── NAV ──────────────────────────────────────────────
 function showPage(id, tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -389,10 +385,8 @@ function goAdmin(tab) {
   setTimeout(() => document.getElementById('pinInput').focus(), 150);
 }
 
-// ── PIN ───────────────────────────────────────────────
 async function checkPin() {
   const pin = document.getElementById('pinInput').value;
-  // We verify against the server
   try {
     const res = await fetch('/api/verify-pin', {
       method: 'POST',
@@ -419,7 +413,6 @@ function lockAdmin() {
   showToast('🔒 Sesión cerrada', 'Panel de administración bloqueado.');
 }
 
-// ── TOAST ────────────────────────────────────────────
 function showToast(title, body) {
   document.getElementById('toastTitle').textContent = title;
   document.getElementById('toastBody').textContent = body;
@@ -428,7 +421,6 @@ function showToast(title, body) {
   setTimeout(() => t.classList.remove('show'), 4500);
 }
 
-// ── NOTIFS ───────────────────────────────────────────
 function addNotif(title, msg) {
   notifications.unshift({ title, msg, time: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) });
   const badge = document.getElementById('notifBadge');
@@ -451,7 +443,6 @@ function toggleNotif() {
   }
 }
 
-// ── DELIVERY DATE CALC ───────────────────────────────
 function calcDeliveryDate() {
   const d = new Date();
   let days = 0;
@@ -464,9 +455,11 @@ function calcDeliveryDate() {
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('fechaEntrega');
   if (el) el.textContent = calcDeliveryDate();
+  ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateTotal);
+  });
 });
 
-// ── PRODUCTS ─────────────────────────────────────────
 function toggleProduct(card) {
   card.classList.toggle('selected');
   updateTotal();
@@ -474,45 +467,27 @@ function toggleProduct(card) {
 
 function updateTotal() {
   const selectedCards = [...document.querySelectorAll('.product-card.selected')];
-  if (!selectedCards.length) {
-    document.getElementById('totalSection').style.display = 'none';
-    return;
-  }
-  // Get total qty
+  if (!selectedCards.length) { document.getElementById('totalSection').style.display = 'none'; return; }
   const totalQty = ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids']
     .reduce((sum, id) => sum + (+document.getElementById(id).value || 0), 0);
   const qty = totalQty || 1;
-
-  // Average price of selected products
   const avgPrice = selectedCards.reduce((sum, c) => sum + (+c.dataset.price || 0), 0) / selectedCards.length;
   const total = Math.round(avgPrice * qty);
-
   document.getElementById('totalAmount').textContent = 'RD$' + total.toLocaleString('es-DO');
   document.getElementById('totalSection').style.display = 'block';
 }
 
-// Update total when qty changes
-document.addEventListener('DOMContentLoaded', () => {
-  const el = document.getElementById('fechaEntrega');
-  if (el) el.textContent = calcDeliveryDate();
-  ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updateTotal);
-  });
-});
-
-// ── SUBMIT ORDER ─────────────────────────────────────
 async function submitOrder() {
   const nombre = document.getElementById('f-nombre').value.trim();
   const email  = document.getElementById('f-email').value.trim();
-  if (!nombre || !email) { showToast('⚠️ Campos requeridos', 'Por favor completá nombre y email.'); return; }
+  if (!nombre || !email) { showToast('⚠️ Campos requeridos', 'Por favor completa el nombre y el email.'); return; }
   const prods = [...document.querySelectorAll('.product-card.selected')].map(c => c.querySelector('.product-name').textContent);
-  if (!prods.length) { showToast('⚠️ Seleccioná productos', 'Elegí al menos un producto.'); return; }
+  if (!prods.length) { showToast('⚠️ Selecciona productos', 'Escoge al menos un producto.'); return; }
 
   const btn = document.getElementById('submitBtn');
   btn.textContent = '⏳ Enviando...'; btn.disabled = true;
 
   const fechaEntrega = calcDeliveryDate();
-
   const payload = {
     client: nombre, email,
     phone: document.getElementById('f-tel').value,
@@ -534,7 +509,6 @@ async function submitOrder() {
     if (!res.ok) throw new Error('Error del servidor');
     const order = await res.json();
 
-    // Reset form
     document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
     ['f-nombre','f-email','f-tel','f-colores','f-specs'].forEach(id => document.getElementById(id).value = '');
     ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => document.getElementById(id).value = 0);
@@ -542,12 +516,12 @@ async function submitOrder() {
     addNotif('Pedido '+order.id+' creado', nombre);
     document.getElementById('successBody').innerHTML = `
       Tu pedido <strong>${order.id}</strong> fue registrado exitosamente.<br><br>
-      📧 Te enviamos un email de confirmación a <strong>${email}</strong>.<br><br>
+      📧 Te mandamos un email de confirmación a <strong>${email}</strong>.<br><br>
       📅 Fecha estimada de entrega: <strong>${fechaEntrega}</strong><br><br>
-      Podés seguir el estado de tu orden en la sección <em>Mis Pedidos</em>.`;
+      Puedes seguir el estado de tu orden en la sección <em>Mis Pedidos</em>.`;
     document.getElementById('successModal').classList.add('open');
   } catch(e) {
-    showToast('❌ Error', 'No se pudo enviar el pedido. Intentá de nuevo.');
+    showToast('❌ Error', 'No se pudo enviar el pedido. Intenta de nuevo.');
   } finally {
     btn.textContent = '→ ENVIAR PEDIDO'; btn.disabled = false;
   }
@@ -559,7 +533,6 @@ function closeSuccessModal() {
   showPage('seguimiento', document.querySelectorAll('.nav-tab')[2]);
 }
 
-// ── ORDER CARD ────────────────────────────────────────
 function orderCard(order, isAdmin) {
   const si = STAGES.indexOf(order.stage);
   const steps = STAGES.map((s,i) => `
@@ -595,7 +568,6 @@ function orderCard(order, isAdmin) {
   </div>`;
 }
 
-// ── LOAD ORDERS ───────────────────────────────────────
 async function loadOrders() {
   const q = document.getElementById('searchInput')?.value || '';
   const stage = document.getElementById('filterStatus')?.value || '';
@@ -604,7 +576,7 @@ async function loadOrders() {
   try {
     const res = await fetch(`/api/orders/search?q=${encodeURIComponent(q)}&stage=${stage}`);
     const orders = await res.json();
-    list.innerHTML = orders.length ? orders.map(o => orderCard(o, false)).join('') : '<p style="color:var(--muted);font-size:13px;">Sin pedidos encontrados.</p>';
+    list.innerHTML = orders.length ? orders.map(o => orderCard(o, false)).join('') : '<p style="color:var(--muted);font-size:13px;">No se encontraron pedidos.</p>';
   } catch { list.innerHTML = '<p style="color:var(--muted);">Error cargando pedidos.</p>'; }
 }
 
@@ -614,17 +586,16 @@ async function loadAdminOrders() {
   try {
     const res = await fetch('/api/orders');
     const orders = await res.json();
-    // Update stats
     document.getElementById('st-total').textContent = orders.length;
     document.getElementById('st-rec').textContent   = orders.filter(o=>o.stage==='recibido').length;
     document.getElementById('st-prod').textContent  = orders.filter(o=>o.stage==='proceso'||o.stage==='terminacion').length;
     document.getElementById('st-dep').textContent   = orders.filter(o=>o.stage==='despacho').length;
-    list.innerHTML = orders.length ? orders.map(o => orderCard(o, true)).join('') : '<p style="color:var(--muted);font-size:13px;">Sin órdenes aún.</p>';
+    list.innerHTML = orders.length ? orders.map(o => orderCard(o, true)).join('') : '<p style="color:var(--muted);font-size:13px;">Sin órdenes todavía.</p>';
   } catch { list.innerHTML = '<p style="color:var(--muted);">Error cargando órdenes.</p>'; }
 }
 
 async function advanceOrder(orderId) {
-  const pin = prompt('Confirmá con tu PIN de admin:');
+  const pin = prompt('Confirma con tu PIN de admin:');
   if (!pin) return;
   try {
     const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/advance`, {
@@ -638,7 +609,6 @@ async function advanceOrder(orderId) {
   } catch { showToast('❌ Error', 'No se pudo avanzar la etapa.'); }
 }
 
-// close panels on outside click
 document.addEventListener('click', e => {
   if (!e.target.closest('#notifPanel') && !e.target.closest('#bellBtn'))
     document.getElementById('notifPanel').classList.remove('open');
