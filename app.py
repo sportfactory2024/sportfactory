@@ -1,8 +1,8 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from datetime import datetime
-import os
+import os, json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,7 +14,6 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'sportfactory-secret-2024')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///sportfactory.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Gmail config
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -27,39 +26,40 @@ mail = Mail(app)
 
 # ── MODELS ──────────────────────────────────────────────
 class Order(db.Model):
-    id          = db.Column(db.Integer, primary_key=True)
-    order_code  = db.Column(db.String(10), unique=True, nullable=False)
-    client_name = db.Column(db.String(120), nullable=False)
-    client_email= db.Column(db.String(120), nullable=False)
-    client_phone= db.Column(db.String(40))
-    empresa     = db.Column(db.String(120))
-    products    = db.Column(db.Text)          # JSON string
-    quantities  = db.Column(db.Text)          # JSON string
-    colors      = db.Column(db.String(200))
-    impresion   = db.Column(db.String(100))
-    specs       = db.Column(db.Text)
-    fecha_deseada = db.Column(db.String(20))
-    presupuesto = db.Column(db.String(50))
-    stage       = db.Column(db.String(30), default='recibido')
-    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    id            = db.Column(db.Integer, primary_key=True)
+    order_code    = db.Column(db.String(10), unique=True, nullable=False)
+    client_name   = db.Column(db.String(120), nullable=False)
+    client_email  = db.Column(db.String(120), nullable=False)
+    client_phone  = db.Column(db.String(40))
+    empresa       = db.Column(db.String(120))
+    products      = db.Column(db.Text)
+    quantities    = db.Column(db.Text)
+    colors        = db.Column(db.String(200))
+    impresion     = db.Column(db.String(200))
+    specs         = db.Column(db.Text)
+    fecha_deseada = db.Column(db.String(60))
+    presupuesto   = db.Column(db.String(50))
+    products_detail = db.Column(db.Text)   # nuevo: detalle por producto
+    stage         = db.Column(db.String(30), default='recibido')
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        import json
         return {
-            'id': self.order_code,
-            'client': self.client_name,
-            'email': self.client_email,
-            'phone': self.client_phone,
-            'empresa': self.empresa or '',
-            'products': json.loads(self.products or '[]'),
-            'qty': json.loads(self.quantities or '{}'),
-            'colors': self.colors or '',
-            'impresion': self.impresion or '',
-            'specs': self.specs or '',
-            'fecha_deseada': self.fecha_deseada or '',
-            'presupuesto': self.presupuesto or '',
-            'stage': self.stage,
-            'date': self.created_at.strftime('%Y-%m-%d'),
+            'id':           self.order_code,
+            'client':       self.client_name,
+            'email':        self.client_email,
+            'phone':        self.client_phone or '',
+            'empresa':      self.empresa or '',
+            'products':     json.loads(self.products or '[]'),
+            'qty':          json.loads(self.quantities or '{}'),
+            'colors':       self.colors or '',
+            'impresion':    self.impresion or '',
+            'specs':        self.specs or '',
+            'fecha_deseada':self.fecha_deseada or '',
+            'presupuesto':  self.presupuesto or '',
+            'products_detail': json.loads(self.products_detail or '[]'),
+            'stage':        self.stage,
+            'date':         self.created_at.strftime('%Y-%m-%d'),
         }
 
 # ── HELPERS ─────────────────────────────────────────────
@@ -76,13 +76,35 @@ def generate_order_code():
     num = (last.id + 1) if last else 1
     return f'#{str(num).zfill(3)}'
 
+def build_products_detail_text(products_detail):
+    """Build a readable string from products_detail list."""
+    lines = []
+    for p in products_detail:
+        name = p.get('name', '')
+        sizes = p.get('sizes', {})
+        color = p.get('color', '')
+        print_type = p.get('print', '')
+        specs = p.get('specs', '')
+        sizes_str = ', '.join(f"{k}: {v}" for k, v in sizes.items() if v)
+        line = f"• {name}"
+        if sizes_str: line += f" | Tallas: {sizes_str}"
+        if color:     line += f" | Color: {color}"
+        if print_type: line += f" | Impresión: {print_type}"
+        if specs:     line += f" | Diseño: {specs}"
+        lines.append(line)
+    return '\n'.join(lines)
+
 def send_status_email(order, stage):
-    """Send email notification to client about order status change."""
     if not app.config['MAIL_USERNAME']:
-        print(f"[EMAIL SKIPPED] No Gmail configured. Would email {order.client_email}")
+        print(f"[EMAIL SKIPPED] No Gmail configurado.")
         return
 
-    stage_label = STAGE_LABELS.get(stage, stage)
+    # Build product detail for email
+    try:
+        detail = json.loads(order.products_detail or '[]')
+        detail_text = build_products_detail_text(detail) if detail else order.products
+    except:
+        detail_text = order.products or ''
 
     messages = {
         'recibido': f"""
@@ -91,10 +113,11 @@ def send_status_email(order, stage):
 ✅ Recibimos tu pedido {order.order_code} con éxito.
 
 Nuestro equipo ya tiene tu orden y comenzará la producción pronto.
-Te iremos notificando en cada etapa del proceso.
+Te vamos a ir avisando en cada etapa del proceso.
 
-📦 Productos: {order.products}
-🎨 Colores: {order.colors}
+📦 Detalle de tu pedido:
+{detail_text}
+
 ⏱️ Entrega estimada: 5 días hábiles
 
 ¡Gracias por confiar en SportFactory!
@@ -107,7 +130,7 @@ Te iremos notificando en cada etapa del proceso.
 Nuestro equipo está trabajando en tu ropa deportiva.
 Te avisaremos cuando entre en etapa de terminación.
 
-Si tenés alguna duda podés responder este email.
+Si tienes alguna duda puedes responder este email.
 
 ¡Saludos, SportFactory!
         """,
@@ -119,7 +142,7 @@ Si tenés alguna duda podés responder este email.
 Estamos haciendo los últimos retoques y verificando que todo
 esté perfecto antes de despachártelo.
 
-Ya casi está listo — te avisamos cuando salga para vos.
+Ya casi está listo — te avisamos cuando salga para ti.
 
 ¡Saludos, SportFactory!
         """,
@@ -173,52 +196,78 @@ def get_orders():
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
-    import json
-    data = request.json
-    if not data.get('client') or not data.get('email'):
-        return jsonify({'error': 'Nombre y email son requeridos'}), 400
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No se recibieron datos'}), 400
+        if not data.get('client') or not data.get('email'):
+            return jsonify({'error': 'Nombre y email son requeridos'}), 400
 
-    order = Order(
-        order_code    = generate_order_code(),
-        client_name   = data['client'],
-        client_email  = data['email'],
-        client_phone  = data.get('phone', ''),
-        empresa       = data.get('empresa', ''),
-        products      = json.dumps(data.get('products', [])),
-        quantities    = json.dumps(data.get('qty', {})),
-        colors        = data.get('colors', ''),
-        impresion     = data.get('impresion', ''),
-        specs         = data.get('specs', ''),
-        fecha_deseada = data.get('fecha_deseada', ''),
-        presupuesto   = data.get('presupuesto', ''),
-        stage         = 'recibido',
-    )
-    db.session.add(order)
-    db.session.commit()
+        # Safely serialize all fields
+        products_list = data.get('products', [])
+        if isinstance(products_list, str):
+            products_list = [products_list]
 
-    send_status_email(order, 'recibido')
-    return jsonify(order.to_dict()), 201
+        qty_data = data.get('qty', {})
+        if not isinstance(qty_data, dict):
+            qty_data = {}
+
+        products_detail = data.get('products_detail', [])
+        if not isinstance(products_detail, list):
+            products_detail = []
+
+        order = Order(
+            order_code      = generate_order_code(),
+            client_name     = str(data['client']),
+            client_email    = str(data['email']),
+            client_phone    = str(data.get('phone', '')),
+            empresa         = str(data.get('empresa', '')),
+            products        = json.dumps(products_list, ensure_ascii=False),
+            quantities      = json.dumps(qty_data, ensure_ascii=False),
+            colors          = str(data.get('colors', ''))[:200],
+            impresion       = str(data.get('impresion', ''))[:200],
+            specs           = str(data.get('specs', '')),
+            fecha_deseada   = str(data.get('fecha_deseada', '')),
+            presupuesto     = str(data.get('presupuesto', '')),
+            products_detail = json.dumps(products_detail, ensure_ascii=False),
+            stage           = 'recibido',
+        )
+        db.session.add(order)
+        db.session.commit()
+
+        send_status_email(order, 'recibido')
+        return jsonify(order.to_dict()), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ORDER ERROR] {e}")
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/orders/<order_code>/advance', methods=['POST'])
 def advance_order(order_code):
-    # Verify admin PIN
-    data = request.json or {}
-    if data.get('pin') != os.getenv('ADMIN_PIN', '2024'):
-        return jsonify({'error': 'PIN incorrecto'}), 403
+    try:
+        data = request.json or {}
+        if data.get('pin') != os.getenv('ADMIN_PIN', '2024'):
+            return jsonify({'error': 'PIN incorrecto'}), 403
 
-    order = Order.query.filter_by(order_code=order_code).first()
-    if not order:
-        return jsonify({'error': 'Orden no encontrada'}), 404
+        order = Order.query.filter_by(order_code=order_code).first()
+        if not order:
+            return jsonify({'error': 'Orden no encontrada'}), 404
 
-    si = STAGES.index(order.stage)
-    if si >= len(STAGES) - 1:
-        return jsonify({'error': 'Ya está en la última etapa'}), 400
+        si = STAGES.index(order.stage)
+        if si >= len(STAGES) - 1:
+            return jsonify({'error': 'Ya está en la última etapa'}), 400
 
-    order.stage = STAGES[si + 1]
-    db.session.commit()
+        order.stage = STAGES[si + 1]
+        db.session.commit()
 
-    send_status_email(order, order.stage)
-    return jsonify(order.to_dict())
+        send_status_email(order, order.stage)
+        return jsonify(order.to_dict())
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ADVANCE ERROR] {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/orders/search', methods=['GET'])
 def search_orders():
