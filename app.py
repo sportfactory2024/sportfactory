@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from datetime import datetime
-import os, json
+import os, json, threading
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -39,7 +39,7 @@ class Order(db.Model):
     specs         = db.Column(db.Text)
     fecha_deseada = db.Column(db.String(60))
     presupuesto   = db.Column(db.String(50))
-    products_detail = db.Column(db.Text)   # nuevo: detalle por producto
+    products_detail = db.Column(db.Text)
     stage         = db.Column(db.String(30), default='recibido')
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -77,7 +77,6 @@ def generate_order_code():
     return f'#{str(num).zfill(3)}'
 
 def build_products_detail_text(products_detail):
-    """Build a readable string from products_detail list."""
     lines = []
     for p in products_detail:
         name = p.get('name', '')
@@ -99,7 +98,6 @@ def send_status_email(order, stage):
         print(f"[EMAIL SKIPPED] No Gmail configurado.")
         return
 
-    # Build product detail for email
     try:
         detail = json.loads(order.products_detail or '[]')
         detail_text = build_products_detail_text(detail) if detail else order.products
@@ -166,16 +164,27 @@ Gracias por confiar en SportFactory. ¡Esperamos que te encante!
         'despacho':    f'🚚 ¡Tu pedido {order.order_code} fue despachado!',
     }
 
-    try:
-        msg = Message(
-            subject=subject_map.get(stage, f'Actualización pedido {order.order_code}'),
-            recipients=[order.client_email],
-            body=messages.get(stage, ''),
-        )
-        mail.send(msg)
-        print(f"[EMAIL SENT] {order.client_email} — stage: {stage}")
-    except Exception as e:
-        print(f"[EMAIL ERROR] {e}")
+    # ── Enviar en hilo separado pa' no bloquear el worker ──
+    def _send(subject, recipient, body):
+        try:
+            with app.app_context():
+                msg = Message(
+                    subject=subject,
+                    recipients=[recipient],
+                    body=body,
+                )
+                mail.send(msg)
+                print(f"[EMAIL SENT] {recipient} — stage: {stage}")
+        except Exception as e:
+            print(f"[EMAIL ERROR] {e}")
+
+    t = threading.Thread(target=_send, args=(
+        subject_map.get(stage, f'Actualización pedido {order.order_code}'),
+        order.client_email,
+        messages.get(stage, ''),
+    ))
+    t.daemon = True
+    t.start()
 
 # ── ROUTES ──────────────────────────────────────────────
 @app.route('/api/verify-pin', methods=['POST'])
@@ -203,7 +212,6 @@ def create_order():
         if not data.get('client') or not data.get('email'):
             return jsonify({'error': 'Nombre y email son requeridos'}), 400
 
-        # Safely serialize all fields
         products_list = data.get('products', [])
         if isinstance(products_list, str):
             products_list = [products_list]
