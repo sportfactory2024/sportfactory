@@ -44,27 +44,122 @@
   .form-group { display:flex; flex-direction:column; gap:6px; }
   .form-group.full { grid-column:1/-1; }
   label { font-size:11px; font-family:'Space Mono',monospace; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
-  input, select, textarea { background:var(--black); border:1px solid var(--border); color:var(--white); padding:12px 14px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .2s; }
+  input, select, textarea { background:var(--black); border:1px solid var(--border); color:var(--white); padding:12px 14px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .2s; width:100%; }
   input:focus, select:focus, textarea:focus { border-color:var(--red); }
   select option { background:var(--gray); }
   textarea { resize:vertical; min-height:90px; }
 
+  /* PRODUCT CARDS — new style */
   .product-section { margin-top:28px; }
   .product-section-title { font-family:'Space Mono',monospace; font-size:11px; color:var(--red); letter-spacing:3px; margin-bottom:16px; text-transform:uppercase; }
-  .product-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-  .product-card { border:1px solid var(--border); border-radius:8px; padding:16px; cursor:pointer; transition:all .2s; position:relative; }
-  .product-card:hover { border-color:var(--muted); }
-  .product-card.selected { border-color:var(--red); background:rgba(230,51,41,.07); }
-  .product-card input[type=checkbox] { display:none; }
-  .product-icon { font-size:28px; margin-bottom:8px; }
-  .product-name { font-weight:600; font-size:13px; margin-bottom:2px; }
-  .product-type { font-size:11px; color:var(--muted); }
-  .check-indicator { position:absolute; top:10px; right:10px; width:18px; height:18px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; transition:all .2s; }
-  .product-card.selected .check-indicator { background:var(--red); border-color:var(--red); color:#fff; }
-  .qty-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px; }
-  .qty-item { display:flex; flex-direction:column; gap:4px; }
-  .qty-item label { font-size:10px; }
 
+  .product-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+
+  .product-card {
+    border:2px solid var(--border); border-radius:12px; overflow:hidden;
+    cursor:pointer; transition:all .25s; position:relative; background:var(--black);
+  }
+  .product-card:hover { border-color:var(--muted); transform:translateY(-2px); }
+  .product-card.selected { border-color:var(--red); background:#0f0505; }
+
+  .product-card-header {
+    padding:18px 16px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+    user-select:none;
+  }
+  .product-card-left { display:flex; align-items:center; gap:12px; }
+  .product-icon { font-size:26px; }
+  .product-name { font-weight:600; font-size:14px; margin-bottom:2px; }
+  .product-type { font-size:11px; color:var(--muted); }
+  .product-price { font-family:'Space Mono',monospace; font-size:13px; color:var(--red); font-weight:700; white-space:nowrap; }
+
+  .check-indicator {
+    width:22px; height:22px; border-radius:50%; border:2px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:11px;
+    transition:all .2s; flex-shrink:0; margin-left:8px;
+  }
+  .product-card.selected .check-indicator { background:var(--red); border-color:var(--red); color:#fff; }
+
+  /* Expandable config panel */
+  .product-config {
+    display:none;
+    padding:0 16px 18px;
+    border-top:1px solid var(--border);
+    animation:expandIn .2s ease;
+  }
+  .product-card.selected .product-config { display:block; }
+  @keyframes expandIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+  .config-section-label {
+    font-family:'Space Mono',monospace; font-size:9px; color:var(--red);
+    letter-spacing:2px; text-transform:uppercase; margin:14px 0 8px;
+  }
+
+  /* Size selector chips */
+  .size-chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .size-chip {
+    background:var(--gray2); border:1px solid var(--border); color:var(--muted);
+    padding:5px 10px; border-radius:4px; font-family:'Space Mono',monospace;
+    font-size:10px; cursor:pointer; transition:all .15s; user-select:none;
+    display:flex; align-items:center; gap:6px;
+  }
+  .size-chip:hover { border-color:var(--muted); color:var(--white); }
+  .size-chip.active { border-color:var(--red); color:var(--white); background:rgba(230,51,41,.12); }
+  .size-chip input[type=number] {
+    width:36px; padding:1px 4px; background:transparent; border:none;
+    border-bottom:1px solid var(--border); color:var(--white); font-size:10px;
+    font-family:'Space Mono',monospace; text-align:center; outline:none;
+    display:none;
+  }
+  .size-chip.active input[type=number] { display:inline-block; }
+
+  /* Color input */
+  .color-input-row { display:flex; gap:8px; align-items:center; }
+  .color-swatches { display:flex; gap:6px; flex-wrap:wrap; }
+  .color-swatch {
+    width:22px; height:22px; border-radius:50%; cursor:pointer;
+    border:2px solid transparent; transition:all .15s; flex-shrink:0;
+  }
+  .color-swatch.active { border-color:var(--white); transform:scale(1.15); }
+  .color-text-input { flex:1; padding:8px 10px; font-size:12px; }
+
+  /* Print type selector */
+  .print-options { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .print-option {
+    background:var(--gray2); border:1px solid var(--border);
+    border-radius:6px; padding:8px 10px; cursor:pointer;
+    font-size:11px; text-align:center; transition:all .15s; user-select:none;
+  }
+  .print-option:hover { border-color:var(--muted); }
+  .print-option.active { border-color:var(--red); color:var(--white); background:rgba(230,51,41,.1); }
+
+  /* Qty global for product */
+  .qty-total-row { display:flex; align-items:center; gap:10px; margin-top:4px; }
+  .qty-stepper { display:flex; align-items:center; gap:0; }
+  .qty-btn {
+    background:var(--gray2); border:1px solid var(--border); color:var(--white);
+    width:28px; height:28px; cursor:pointer; font-size:16px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; transition:all .15s;
+  }
+  .qty-btn:first-child { border-radius:4px 0 0 4px; }
+  .qty-btn:last-child { border-radius:0 4px 4px 0; }
+  .qty-btn:hover { background:var(--red); border-color:var(--red); }
+  .qty-display {
+    background:var(--black); border:1px solid var(--border); border-left:none; border-right:none;
+    color:var(--white); width:40px; height:28px; text-align:center;
+    font-family:'Space Mono',monospace; font-size:12px; line-height:28px;
+  }
+
+  /* Summary bar */
+  .summary-bar {
+    background:var(--gray2); border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; margin-top:10px; font-size:11px; color:var(--muted);
+    font-family:'Space Mono',monospace; line-height:1.6;
+    display:none;
+  }
+  .product-card.selected .summary-bar { display:block; }
+
+  /* Orders */
   .orders-list { display:flex; flex-direction:column; gap:16px; }
   .order-row { background:var(--gray); border:1px solid var(--border); border-radius:10px; padding:24px 28px; transition:border-color .2s; }
   .order-row:hover { border-color:var(--muted); }
@@ -131,8 +226,10 @@
 
   @media(max-width:768px){
     nav{padding:14px 20px;} .page{padding:24px 20px;}
-    .form-grid{grid-template-columns:1fr;} .product-grid{grid-template-columns:1fr 1fr;}
-    .qty-row{grid-template-columns:1fr 1fr;} .stats-row{grid-template-columns:1fr 1fr;}
+    .form-grid{grid-template-columns:1fr;}
+    .product-grid{grid-template-columns:1fr;}
+    .print-options{grid-template-columns:1fr 1fr;}
+    .stats-row{grid-template-columns:1fr 1fr;}
     .stepper{flex-wrap:wrap;gap:8px;} .step-line{display:none;}
     .hero h1{font-size:52px;} .notif-panel{right:12px;left:12px;width:auto;}
   }
@@ -170,7 +267,7 @@
     <div class="modal-title">ÁREA PRIVADA</div>
     <div class="modal-body">Ingresa el PIN de administrador para acceder al panel de producción.</div>
     <input type="password" id="pinInput" maxlength="6" placeholder="● ● ● ●"
-      style="text-align:center;font-size:22px;letter-spacing:8px;margin-bottom:8px;width:100%;"
+      style="text-align:center;font-size:22px;letter-spacing:8px;margin-bottom:8px;"
       onkeydown="if(event.key==='Enter') checkPin()">
     <div id="pinError" style="display:none;color:var(--red);font-size:12px;font-family:'Space Mono',monospace;margin-bottom:12px;">PIN incorrecto. Intenta de nuevo.</div>
     <div class="modal-actions">
@@ -234,42 +331,332 @@
     </div>
 
     <div class="product-section">
-      <div class="product-section-title">¿Qué necesitas?</div>
-      <div class="product-grid">
-        <div class="product-card" onclick="toggleProduct(this)" data-price="650"><div class="check-indicator">✓</div><div class="product-icon">👕</div><div class="product-name">Camiseta</div><div class="product-type">Textil · Sublimada</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$650 c/u</div></div>
-        <div class="product-card" onclick="toggleProduct(this)" data-price="900"><div class="check-indicator">✓</div><div class="product-icon">🩳</div><div class="product-name">Short</div><div class="product-type">Textil · Deportivo</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$900 c/u</div></div>
-        <div class="product-card" onclick="toggleProduct(this)" data-price="1400"><div class="check-indicator">✓</div><div class="product-icon">🩱</div><div class="product-name">Licra / Legging</div><div class="product-type">Textil · Compresión</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$1,400 c/u</div></div>
-        <div class="product-card" onclick="toggleProduct(this)" data-price="1500"><div class="check-indicator">✓</div><div class="product-icon">🧥</div><div class="product-name">Buzo / Hoodie</div><div class="product-type">Textil · Frizado</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$1,500 c/u</div></div>
-        <div class="product-card" onclick="toggleProduct(this)" data-price="2000"><div class="check-indicator">✓</div><div class="product-icon">🎽</div><div class="product-name">Uniforme Completo</div><div class="product-type">Textil · Kit equipo</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$2,000 c/u</div></div>
-        <div class="product-card" onclick="toggleProduct(this)" data-price="800"><div class="check-indicator">✓</div><div class="product-icon">🧢</div><div class="product-name">Gorra / Cap</div><div class="product-type">Promocional</div><div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">RD$800 c/u</div></div>
-      </div>
-    </div>
+      <div class="product-section-title">Selecciona los productos — configura cada uno</div>
+      <div class="product-grid" id="productGrid">
 
-    <div class="product-section">
-      <div class="product-section-title">Tallas y cantidades</div>
-      <div class="qty-row">
-        <div class="qty-item"><label>XS</label><input type="number" id="q-xs" min="0" value="0"></div>
-        <div class="qty-item"><label>S</label><input type="number" id="q-s" min="0" value="0"></div>
-        <div class="qty-item"><label>M</label><input type="number" id="q-m" min="0" value="0"></div>
-        <div class="qty-item"><label>L</label><input type="number" id="q-l" min="0" value="0"></div>
-        <div class="qty-item"><label>XL</label><input type="number" id="q-xl" min="0" value="0"></div>
-        <div class="qty-item"><label>XXL</label><input type="number" id="q-xxl" min="0" value="0"></div>
-        <div class="qty-item"><label>3XL</label><input type="number" id="q-3xl" min="0" value="0"></div>
-        <div class="qty-item"><label>Niños</label><input type="number" id="q-kids" min="0" value="0"></div>
-      </div>
-    </div>
-
-    <div class="product-section">
-      <div class="product-section-title">Detalle del pedido</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Colores principales</label><input type="text" id="f-colores" placeholder="Ej: rojo, negro, blanco"></div>
-        <div class="form-group"><label>Tipo de impresión</label>
-          <select id="f-impresion">
-            <option>Sublimación full color</option><option>Serigrafía 1 tinta</option>
-            <option>Serigrafía multicolor</option><option>Bordado</option><option>Sin impresión</option>
-          </select>
+        <!-- CAMISETA -->
+        <div class="product-card" data-id="camiseta" data-price="650">
+          <div class="product-card-header" onclick="toggleProduct(this.closest('.product-card'))">
+            <div class="product-card-left">
+              <div class="product-icon">👕</div>
+              <div>
+                <div class="product-name">Camiseta</div>
+                <div class="product-type">Textil · Sublimada</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="product-price">RD$650 c/u</div>
+              <div class="check-indicator">✓</div>
+            </div>
+          </div>
+          <div class="product-config">
+            <div class="config-section-label">Tallas y cantidad por talla</div>
+            <div class="size-chips">
+              <label class="size-chip" onclick="toggleSize(this)">XS <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">S <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">M <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">L <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XXL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">3XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">Niños <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+            </div>
+            <div class="config-section-label">Colores</div>
+            <div class="color-input-row">
+              <div class="color-swatches">
+                <div class="color-swatch" style="background:#e63329;" onclick="pickColor(this,'#e63329')" title="Rojo"></div>
+                <div class="color-swatch" style="background:#000;" onclick="pickColor(this,'#000')" title="Negro"></div>
+                <div class="color-swatch" style="background:#fff;border:1px solid #444;" onclick="pickColor(this,'#fff')" title="Blanco"></div>
+                <div class="color-swatch" style="background:#1a4fa0;" onclick="pickColor(this,'#1a4fa0')" title="Azul"></div>
+                <div class="color-swatch" style="background:#2ecc71;" onclick="pickColor(this,'#2ecc71')" title="Verde"></div>
+                <div class="color-swatch" style="background:#f39c12;" onclick="pickColor(this,'#f39c12')" title="Amarillo"></div>
+                <div class="color-swatch" style="background:#9b59b6;" onclick="pickColor(this,'#9b59b6')" title="Morado"></div>
+              </div>
+              <input type="text" class="color-text-input" placeholder="Ej: rojo y negro" oninput="updateSummary(this.closest('.product-card'))">
+            </div>
+            <div class="config-section-label">Tipo de impresión</div>
+            <div class="print-options">
+              <div class="print-option active" onclick="selectPrint(this)">Sublimación full</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía 1 tinta</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía multi</div>
+              <div class="print-option" onclick="selectPrint(this)">Bordado</div>
+              <div class="print-option" onclick="selectPrint(this)">Sin impresión</div>
+            </div>
+            <div class="config-section-label">Especificaciones / Diseño</div>
+            <textarea placeholder="Logos, texto, número de jugador, posición del estampado..." rows="2" oninput="updateSummary(this.closest('.product-card'))"></textarea>
+          </div>
         </div>
-        <div class="form-group full"><label>Especificaciones / Diseño</label><textarea id="f-specs" placeholder="Describe tu diseño: logos, texto, número de jugador, posición del estampado..."></textarea></div>
+
+        <!-- SHORT -->
+        <div class="product-card" data-id="short" data-price="900">
+          <div class="product-card-header" onclick="toggleProduct(this.closest('.product-card'))">
+            <div class="product-card-left">
+              <div class="product-icon">🩳</div>
+              <div>
+                <div class="product-name">Short</div>
+                <div class="product-type">Textil · Deportivo</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="product-price">RD$900 c/u</div>
+              <div class="check-indicator">✓</div>
+            </div>
+          </div>
+          <div class="product-config">
+            <div class="config-section-label">Tallas y cantidad por talla</div>
+            <div class="size-chips">
+              <label class="size-chip" onclick="toggleSize(this)">XS <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">S <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">M <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">L <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XXL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">3XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">Niños <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+            </div>
+            <div class="config-section-label">Colores</div>
+            <div class="color-input-row">
+              <div class="color-swatches">
+                <div class="color-swatch" style="background:#e63329;" onclick="pickColor(this,'#e63329')" title="Rojo"></div>
+                <div class="color-swatch" style="background:#000;" onclick="pickColor(this,'#000')" title="Negro"></div>
+                <div class="color-swatch" style="background:#fff;border:1px solid #444;" onclick="pickColor(this,'#fff')" title="Blanco"></div>
+                <div class="color-swatch" style="background:#1a4fa0;" onclick="pickColor(this,'#1a4fa0')" title="Azul"></div>
+                <div class="color-swatch" style="background:#2ecc71;" onclick="pickColor(this,'#2ecc71')" title="Verde"></div>
+                <div class="color-swatch" style="background:#f39c12;" onclick="pickColor(this,'#f39c12')" title="Amarillo"></div>
+                <div class="color-swatch" style="background:#9b59b6;" onclick="pickColor(this,'#9b59b6')" title="Morado"></div>
+              </div>
+              <input type="text" class="color-text-input" placeholder="Ej: azul y blanco" oninput="updateSummary(this.closest('.product-card'))">
+            </div>
+            <div class="config-section-label">Tipo de impresión</div>
+            <div class="print-options">
+              <div class="print-option active" onclick="selectPrint(this)">Sublimación full</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía 1 tinta</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía multi</div>
+              <div class="print-option" onclick="selectPrint(this)">Bordado</div>
+              <div class="print-option" onclick="selectPrint(this)">Sin impresión</div>
+            </div>
+            <div class="config-section-label">Especificaciones / Diseño</div>
+            <textarea placeholder="Logos, texto, número de jugador, posición del estampado..." rows="2" oninput="updateSummary(this.closest('.product-card'))"></textarea>
+          </div>
+        </div>
+
+        <!-- LICRA -->
+        <div class="product-card" data-id="licra" data-price="1400">
+          <div class="product-card-header" onclick="toggleProduct(this.closest('.product-card'))">
+            <div class="product-card-left">
+              <div class="product-icon">🩱</div>
+              <div>
+                <div class="product-name">Licra / Legging</div>
+                <div class="product-type">Textil · Compresión</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="product-price">RD$1,400 c/u</div>
+              <div class="check-indicator">✓</div>
+            </div>
+          </div>
+          <div class="product-config">
+            <div class="config-section-label">Tallas y cantidad por talla</div>
+            <div class="size-chips">
+              <label class="size-chip" onclick="toggleSize(this)">XS <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">S <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">M <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">L <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XXL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">3XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">Niños <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+            </div>
+            <div class="config-section-label">Colores</div>
+            <div class="color-input-row">
+              <div class="color-swatches">
+                <div class="color-swatch" style="background:#e63329;" onclick="pickColor(this,'#e63329')" title="Rojo"></div>
+                <div class="color-swatch" style="background:#000;" onclick="pickColor(this,'#000')" title="Negro"></div>
+                <div class="color-swatch" style="background:#fff;border:1px solid #444;" onclick="pickColor(this,'#fff')" title="Blanco"></div>
+                <div class="color-swatch" style="background:#1a4fa0;" onclick="pickColor(this,'#1a4fa0')" title="Azul"></div>
+                <div class="color-swatch" style="background:#2ecc71;" onclick="pickColor(this,'#2ecc71')" title="Verde"></div>
+                <div class="color-swatch" style="background:#f39c12;" onclick="pickColor(this,'#f39c12')" title="Amarillo"></div>
+                <div class="color-swatch" style="background:#9b59b6;" onclick="pickColor(this,'#9b59b6')" title="Morado"></div>
+              </div>
+              <input type="text" class="color-text-input" placeholder="Ej: negro" oninput="updateSummary(this.closest('.product-card'))">
+            </div>
+            <div class="config-section-label">Tipo de impresión</div>
+            <div class="print-options">
+              <div class="print-option active" onclick="selectPrint(this)">Sublimación full</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía 1 tinta</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía multi</div>
+              <div class="print-option" onclick="selectPrint(this)">Bordado</div>
+              <div class="print-option" onclick="selectPrint(this)">Sin impresión</div>
+            </div>
+            <div class="config-section-label">Especificaciones / Diseño</div>
+            <textarea placeholder="Logos, texto, número de jugador, posición del estampado..." rows="2" oninput="updateSummary(this.closest('.product-card'))"></textarea>
+          </div>
+        </div>
+
+        <!-- BUZO -->
+        <div class="product-card" data-id="buzo" data-price="1500">
+          <div class="product-card-header" onclick="toggleProduct(this.closest('.product-card'))">
+            <div class="product-card-left">
+              <div class="product-icon">🧥</div>
+              <div>
+                <div class="product-name">Buzo / Hoodie</div>
+                <div class="product-type">Textil · Frizado</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="product-price">RD$1,500 c/u</div>
+              <div class="check-indicator">✓</div>
+            </div>
+          </div>
+          <div class="product-config">
+            <div class="config-section-label">Tallas y cantidad por talla</div>
+            <div class="size-chips">
+              <label class="size-chip" onclick="toggleSize(this)">XS <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">S <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">M <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">L <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XXL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">3XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">Niños <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+            </div>
+            <div class="config-section-label">Colores</div>
+            <div class="color-input-row">
+              <div class="color-swatches">
+                <div class="color-swatch" style="background:#e63329;" onclick="pickColor(this,'#e63329')" title="Rojo"></div>
+                <div class="color-swatch" style="background:#000;" onclick="pickColor(this,'#000')" title="Negro"></div>
+                <div class="color-swatch" style="background:#fff;border:1px solid #444;" onclick="pickColor(this,'#fff')" title="Blanco"></div>
+                <div class="color-swatch" style="background:#1a4fa0;" onclick="pickColor(this,'#1a4fa0')" title="Azul"></div>
+                <div class="color-swatch" style="background:#2ecc71;" onclick="pickColor(this,'#2ecc71')" title="Verde"></div>
+                <div class="color-swatch" style="background:#f39c12;" onclick="pickColor(this,'#f39c12')" title="Amarillo"></div>
+                <div class="color-swatch" style="background:#9b59b6;" onclick="pickColor(this,'#9b59b6')" title="Morado"></div>
+              </div>
+              <input type="text" class="color-text-input" placeholder="Ej: gris y rojo" oninput="updateSummary(this.closest('.product-card'))">
+            </div>
+            <div class="config-section-label">Tipo de impresión</div>
+            <div class="print-options">
+              <div class="print-option active" onclick="selectPrint(this)">Sublimación full</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía 1 tinta</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía multi</div>
+              <div class="print-option" onclick="selectPrint(this)">Bordado</div>
+              <div class="print-option" onclick="selectPrint(this)">Sin impresión</div>
+            </div>
+            <div class="config-section-label">Especificaciones / Diseño</div>
+            <textarea placeholder="Logos, texto, número de jugador, posición del estampado..." rows="2" oninput="updateSummary(this.closest('.product-card'))"></textarea>
+          </div>
+        </div>
+
+        <!-- UNIFORME -->
+        <div class="product-card" data-id="uniforme" data-price="2000">
+          <div class="product-card-header" onclick="toggleProduct(this.closest('.product-card'))">
+            <div class="product-card-left">
+              <div class="product-icon">🎽</div>
+              <div>
+                <div class="product-name">Uniforme Completo</div>
+                <div class="product-type">Textil · Kit equipo</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="product-price">RD$2,000 c/u</div>
+              <div class="check-indicator">✓</div>
+            </div>
+          </div>
+          <div class="product-config">
+            <div class="config-section-label">Tallas y cantidad por talla</div>
+            <div class="size-chips">
+              <label class="size-chip" onclick="toggleSize(this)">XS <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">S <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">M <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">L <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">XXL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">3XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">Niños <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+            </div>
+            <div class="config-section-label">Colores</div>
+            <div class="color-input-row">
+              <div class="color-swatches">
+                <div class="color-swatch" style="background:#e63329;" onclick="pickColor(this,'#e63329')" title="Rojo"></div>
+                <div class="color-swatch" style="background:#000;" onclick="pickColor(this,'#000')" title="Negro"></div>
+                <div class="color-swatch" style="background:#fff;border:1px solid #444;" onclick="pickColor(this,'#fff')" title="Blanco"></div>
+                <div class="color-swatch" style="background:#1a4fa0;" onclick="pickColor(this,'#1a4fa0')" title="Azul"></div>
+                <div class="color-swatch" style="background:#2ecc71;" onclick="pickColor(this,'#2ecc71')" title="Verde"></div>
+                <div class="color-swatch" style="background:#f39c12;" onclick="pickColor(this,'#f39c12')" title="Amarillo"></div>
+                <div class="color-swatch" style="background:#9b59b6;" onclick="pickColor(this,'#9b59b6')" title="Morado"></div>
+              </div>
+              <input type="text" class="color-text-input" placeholder="Ej: azul, blanco, rojo" oninput="updateSummary(this.closest('.product-card'))">
+            </div>
+            <div class="config-section-label">Tipo de impresión</div>
+            <div class="print-options">
+              <div class="print-option active" onclick="selectPrint(this)">Sublimación full</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía 1 tinta</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía multi</div>
+              <div class="print-option" onclick="selectPrint(this)">Bordado</div>
+              <div class="print-option" onclick="selectPrint(this)">Sin impresión</div>
+            </div>
+            <div class="config-section-label">Especificaciones / Diseño</div>
+            <textarea placeholder="Logos, texto, número de jugador, posición del estampado..." rows="2" oninput="updateSummary(this.closest('.product-card'))"></textarea>
+          </div>
+        </div>
+
+        <!-- GORRA -->
+        <div class="product-card" data-id="gorra" data-price="800">
+          <div class="product-card-header" onclick="toggleProduct(this.closest('.product-card'))">
+            <div class="product-card-left">
+              <div class="product-icon">🧢</div>
+              <div>
+                <div class="product-name">Gorra / Cap</div>
+                <div class="product-type">Promocional</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="product-price">RD$800 c/u</div>
+              <div class="check-indicator">✓</div>
+            </div>
+          </div>
+          <div class="product-config">
+            <div class="config-section-label">Tallas y cantidad por talla</div>
+            <div class="size-chips">
+              <label class="size-chip" onclick="toggleSize(this)">Única <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">S/M <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">L/XL <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+              <label class="size-chip" onclick="toggleSize(this)">Niños <input type="number" min="0" value="1" onclick="event.stopPropagation()"></label>
+            </div>
+            <div class="config-section-label">Colores</div>
+            <div class="color-input-row">
+              <div class="color-swatches">
+                <div class="color-swatch" style="background:#e63329;" onclick="pickColor(this,'#e63329')" title="Rojo"></div>
+                <div class="color-swatch" style="background:#000;" onclick="pickColor(this,'#000')" title="Negro"></div>
+                <div class="color-swatch" style="background:#fff;border:1px solid #444;" onclick="pickColor(this,'#fff')" title="Blanco"></div>
+                <div class="color-swatch" style="background:#1a4fa0;" onclick="pickColor(this,'#1a4fa0')" title="Azul"></div>
+                <div class="color-swatch" style="background:#2ecc71;" onclick="pickColor(this,'#2ecc71')" title="Verde"></div>
+                <div class="color-swatch" style="background:#f39c12;" onclick="pickColor(this,'#f39c12')" title="Amarillo"></div>
+                <div class="color-swatch" style="background:#9b59b6;" onclick="pickColor(this,'#9b59b6')" title="Morado"></div>
+              </div>
+              <input type="text" class="color-text-input" placeholder="Ej: negro" oninput="updateSummary(this.closest('.product-card'))">
+            </div>
+            <div class="config-section-label">Tipo de impresión</div>
+            <div class="print-options">
+              <div class="print-option active" onclick="selectPrint(this)">Bordado</div>
+              <div class="print-option" onclick="selectPrint(this)">Sublimación full</div>
+              <div class="print-option" onclick="selectPrint(this)">Serigrafía 1 tinta</div>
+              <div class="print-option" onclick="selectPrint(this)">Sin impresión</div>
+            </div>
+            <div class="config-section-label">Especificaciones / Diseño</div>
+            <textarea placeholder="Logo, texto, posición del bordado..." rows="2" oninput="updateSummary(this.closest('.product-card'))"></textarea>
+          </div>
+        </div>
+
+      </div><!-- /product-grid -->
+    </div>
+
+    <!-- Notas generales -->
+    <div class="product-section">
+      <div class="product-section-title">Notas adicionales del pedido</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <textarea id="f-notas" placeholder="Alguna nota general sobre el pedido completo..." rows="2"></textarea>
+        </div>
         <div class="form-group full" style="background:rgba(46,204,113,.07);border:1px solid #2ecc7144;border-radius:8px;padding:14px;">
           <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--success);letter-spacing:1px;margin-bottom:4px;">📅 FECHA DE ENTREGA ESTIMADA</div>
           <div id="fechaEntrega" style="font-size:15px;font-weight:600;"></div>
@@ -283,6 +670,7 @@
       <span style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">Entrega estimada: 5 días hábiles</span>
     </div>
 
+    <!-- TOTAL Y PAGO -->
     <div id="totalSection" style="display:none;margin-top:24px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
       <div style="background:var(--gray2);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;">TOTAL ESTIMADO</span>
@@ -314,8 +702,10 @@
     <input type="text" id="searchInput" placeholder="Buscar por nombre o # orden..." style="flex:1;min-width:200px;" oninput="loadOrders()">
     <select id="filterStatus" onchange="loadOrders()" style="width:160px;">
       <option value="">Todos los estados</option>
-      <option value="recibido">Recibido</option><option value="proceso">En Proceso</option>
-      <option value="terminacion">Terminación</option><option value="despacho">Despacho</option>
+      <option value="recibido">Recibido</option>
+      <option value="proceso">En Proceso</option>
+      <option value="terminacion">Terminación</option>
+      <option value="despacho">Despacho</option>
     </select>
   </div>
   <div class="orders-list" id="ordersList"><div class="loading"><span class="spinner"></span>Cargando pedidos...</div></div>
@@ -330,7 +720,6 @@
     </div>
     <button onclick="lockAdmin()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;transition:all .2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔒 CERRAR SESIÓN</button>
   </div>
-
   <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:12px;">EQUIPO ADMINISTRATIVO</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px;">
     <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray);border-radius:8px;border:1px solid var(--border);">
@@ -346,14 +735,12 @@
       <div><div style="font-size:13px;font-weight:600;">Angela Peña</div><div style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;">Administradora</div></div>
     </div>
   </div>
-
-  <div class="stats-row" id="statsRow">
-    <div class="stat-card"><div class="stat-num red" id="st-total">0</div><div class="stat-label">Total órdenes</div></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="st-total">0</div><div class="stat-label">Total órdenes</div></div>
     <div class="stat-card"><div class="stat-num" style="color:#3498db" id="st-rec">0</div><div class="stat-label">Recibidas</div></div>
     <div class="stat-card"><div class="stat-num" style="color:var(--warning)" id="st-prod">0</div><div class="stat-label">En producción</div></div>
     <div class="stat-card"><div class="stat-num" style="color:var(--success)" id="st-dep">0</div><div class="stat-label">Despachadas</div></div>
   </div>
-
   <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:16px;">ÓRDENES ACTIVAS</div>
   <div class="orders-list" id="adminOrdersList"><div class="loading"><span class="spinner"></span>Cargando...</div></div>
 </div>
@@ -367,6 +754,7 @@ let adminUnlocked = false;
 let adminPinTarget = null;
 let notifications = [];
 
+// ── NAV
 function showPage(id, tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -385,34 +773,25 @@ function goAdmin(tab) {
   setTimeout(() => document.getElementById('pinInput').focus(), 150);
 }
 
+// ── PIN
 async function checkPin() {
   const pin = document.getElementById('pinInput').value;
   try {
     const res = await fetch('/api/verify-pin', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({pin})
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pin})
     });
-    if (res.ok) {
-      adminUnlocked = true;
-      closePinModal();
-      showPage('admin', adminPinTarget);
-    } else {
-      document.getElementById('pinError').style.display = 'block';
-      document.getElementById('pinInput').value = '';
-      document.getElementById('pinInput').focus();
-    }
-  } catch {
-    document.getElementById('pinError').style.display = 'block';
-  }
+    if (res.ok) { adminUnlocked=true; closePinModal(); showPage('admin',adminPinTarget); }
+    else { document.getElementById('pinError').style.display='block'; document.getElementById('pinInput').value=''; document.getElementById('pinInput').focus(); }
+  } catch { document.getElementById('pinError').style.display='block'; }
 }
 function closePinModal() { document.getElementById('pinModal').classList.remove('open'); }
 function lockAdmin() {
-  adminUnlocked = false;
+  adminUnlocked=false;
   showPage('home', document.querySelectorAll('.nav-tab')[0]);
-  showToast('🔒 Sesión cerrada', 'Panel de administración bloqueado.');
+  showToast('🔒 Sesión cerrada','Panel de administración bloqueado.');
 }
 
+// ── TOAST
 function showToast(title, body) {
   document.getElementById('toastTitle').textContent = title;
   document.getElementById('toastBody').textContent = body;
@@ -421,133 +800,212 @@ function showToast(title, body) {
   setTimeout(() => t.classList.remove('show'), 4500);
 }
 
+// ── NOTIFS
 function addNotif(title, msg) {
   notifications.unshift({ title, msg, time: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) });
   const badge = document.getElementById('notifBadge');
-  badge.textContent = Math.min(notifications.length, 9);
+  badge.textContent = Math.min(notifications.length,9);
   badge.style.display = 'flex';
 }
 function toggleNotif() {
   const panel = document.getElementById('notifPanel');
   panel.classList.toggle('open');
   if (panel.classList.contains('open')) {
-    document.getElementById('notifBadge').style.display = 'none';
+    document.getElementById('notifBadge').style.display='none';
     document.getElementById('notifList').innerHTML = notifications.length
-      ? notifications.slice(0,8).map(n => `
-          <div class="notif-item">
-            <div class="notif-dot" style="background:var(--border)"></div>
-            <div><div class="notif-text"><strong>${n.title}</strong><br>${n.msg}</div>
-            <div class="notif-time">${n.time}</div></div>
-          </div>`).join('')
+      ? notifications.slice(0,8).map(n=>`<div class="notif-item"><div class="notif-dot" style="background:var(--border)"></div><div><div class="notif-text"><strong>${n.title}</strong><br>${n.msg}</div><div class="notif-time">${n.time}</div></div></div>`).join('')
       : '<p style="font-size:12px;color:var(--muted);">Sin notificaciones</p>';
   }
 }
 
+// ── DELIVERY DATE
 function calcDeliveryDate() {
-  const d = new Date();
-  let days = 0;
-  while (days < 5) {
-    d.setDate(d.getDate() + 1);
-    if (d.getDay() !== 0 && d.getDay() !== 6) days++;
-  }
-  return d.toLocaleDateString('es-DO', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const d = new Date(); let days=0;
+  while(days<5){ d.setDate(d.getDate()+1); if(d.getDay()!==0&&d.getDay()!==6) days++; }
+  return d.toLocaleDateString('es-DO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
-document.addEventListener('DOMContentLoaded', () => {
-  const el = document.getElementById('fechaEntrega');
-  if (el) el.textContent = calcDeliveryDate();
-  ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updateTotal);
-  });
-});
 
+// ── PRODUCT TOGGLE
 function toggleProduct(card) {
   card.classList.toggle('selected');
   updateTotal();
 }
 
+// ── SIZE CHIP TOGGLE
+function toggleSize(chip) {
+  chip.classList.toggle('active');
+  const card = chip.closest('.product-card');
+  updateSummary(card);
+  updateTotal();
+}
+
+// ── COLOR PICK
+function pickColor(swatch, color) {
+  const swatches = swatch.closest('.color-swatches').querySelectorAll('.color-swatch');
+  swatches.forEach(s => s.classList.remove('active'));
+  swatch.classList.add('active');
+  const textInput = swatch.closest('.color-input-row').querySelector('.color-text-input');
+  const colorName = swatch.getAttribute('title');
+  if (!textInput.value) textInput.value = colorName;
+  updateSummary(swatch.closest('.product-card'));
+}
+
+// ── PRINT SELECT
+function selectPrint(option) {
+  const options = option.closest('.print-options').querySelectorAll('.print-option');
+  options.forEach(o => o.classList.remove('active'));
+  option.classList.add('active');
+  updateSummary(option.closest('.product-card'));
+  updateTotal();
+}
+
+// ── UPDATE SUMMARY inside card
+function updateSummary(card) {
+  // no separate summary bar needed — just recalc total
+  updateTotal();
+}
+
+// ── GET PRODUCT CONFIG
+function getProductConfig(card) {
+  const id = card.dataset.id;
+  const price = +card.dataset.price;
+  const name = card.querySelector('.product-name').textContent;
+
+  // sizes
+  const sizes = {};
+  card.querySelectorAll('.size-chip.active').forEach(chip => {
+    const label = chip.textContent.trim().split('\n')[0].trim();
+    const qty = +chip.querySelector('input').value || 1;
+    sizes[label] = qty;
+  });
+  const totalQty = Object.values(sizes).reduce((a,b)=>a+b, 0);
+
+  // color
+  const colorText = card.querySelector('.color-text-input')?.value || '';
+  const activeSwatches = [...card.querySelectorAll('.color-swatch.active')].map(s=>s.title).join(', ');
+  const color = colorText || activeSwatches || '';
+
+  // print
+  const printActive = card.querySelector('.print-option.active');
+  const print = printActive ? printActive.textContent.trim() : '';
+
+  // specs
+  const textarea = card.querySelector('textarea');
+  const specs = textarea ? textarea.value : '';
+
+  return { id, name, price, sizes, totalQty, color, print, specs };
+}
+
+// ── UPDATE TOTAL
 function updateTotal() {
   const selectedCards = [...document.querySelectorAll('.product-card.selected')];
-  if (!selectedCards.length) { document.getElementById('totalSection').style.display = 'none'; return; }
-  const totalQty = ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids']
-    .reduce((sum, id) => sum + (+document.getElementById(id).value || 0), 0);
-  const qty = totalQty || 1;
-  const avgPrice = selectedCards.reduce((sum, c) => sum + (+c.dataset.price || 0), 0) / selectedCards.length;
-  const total = Math.round(avgPrice * qty);
+  if (!selectedCards.length) {
+    document.getElementById('totalSection').style.display = 'none';
+    return;
+  }
+  let total = 0;
+  selectedCards.forEach(card => {
+    const cfg = getProductConfig(card);
+    const qty = cfg.totalQty || 1;
+    total += cfg.price * qty;
+  });
   document.getElementById('totalAmount').textContent = 'RD$' + total.toLocaleString('es-DO');
   document.getElementById('totalSection').style.display = 'block';
 }
 
+// ── SUBMIT
 async function submitOrder() {
   const nombre = document.getElementById('f-nombre').value.trim();
   const email  = document.getElementById('f-email').value.trim();
-  if (!nombre || !email) { showToast('⚠️ Campos requeridos', 'Por favor completa el nombre y el email.'); return; }
-  const prods = [...document.querySelectorAll('.product-card.selected')].map(c => c.querySelector('.product-name').textContent);
-  if (!prods.length) { showToast('⚠️ Selecciona productos', 'Escoge al menos un producto.'); return; }
+  if (!nombre || !email) { showToast('⚠️ Campos requeridos','Por favor completa el nombre y el email.'); return; }
+
+  const selectedCards = [...document.querySelectorAll('.product-card.selected')];
+  if (!selectedCards.length) { showToast('⚠️ Selecciona productos','Escoge al menos un producto.'); return; }
 
   const btn = document.getElementById('submitBtn');
-  btn.textContent = '⏳ Enviando...'; btn.disabled = true;
+  btn.textContent='⏳ Enviando...'; btn.disabled=true;
 
   const fechaEntrega = calcDeliveryDate();
+  const productsDetail = selectedCards.map(card => getProductConfig(card));
+
+  // Build legacy-compatible payload + new detail
   const payload = {
     client: nombre, email,
     phone: document.getElementById('f-tel').value,
     empresa: '',
-    products: prods,
-    qty: { XS:+gv('q-xs'), S:+gv('q-s'), M:+gv('q-m'), L:+gv('q-l'), XL:+gv('q-xl'), XXL:+gv('q-xxl'), '3XL':+gv('q-3xl'), 'Niños':+gv('q-kids') },
-    colors: document.getElementById('f-colores').value,
-    impresion: document.getElementById('f-impresion').value,
-    specs: document.getElementById('f-specs').value,
+    products: productsDetail.map(p => p.name),
+    qty: productsDetail.reduce((acc, p) => {
+      Object.entries(p.sizes).forEach(([k,v]) => { acc[k] = (acc[k]||0)+v; });
+      return acc;
+    }, {}),
+    colors: productsDetail.map(p => p.color).filter(Boolean).join(' / '),
+    impresion: productsDetail.map(p => p.print).filter(Boolean).join(' / '),
+    specs: productsDetail.map(p => p.specs ? `[${p.name}] ${p.specs}` : '').filter(Boolean).join('\n') + (document.getElementById('f-notas').value ? '\nNotas: '+document.getElementById('f-notas').value : ''),
     fecha_deseada: fechaEntrega,
     presupuesto: '',
+    products_detail: productsDetail
   };
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-    const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal: controller.signal });
+    const timeout = setTimeout(()=>controller.abort(), 15000);
+    const res = await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
     clearTimeout(timeout);
-    if (!res.ok) throw new Error('Error del servidor');
+    if (!res.ok) throw new Error('Error');
     const order = await res.json();
 
+    // Reset
     document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
-    ['f-nombre','f-email','f-tel','f-colores','f-specs'].forEach(id => document.getElementById(id).value = '');
-    ['q-xs','q-s','q-m','q-l','q-xl','q-xxl','q-3xl','q-kids'].forEach(id => document.getElementById(id).value = 0);
+    document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.color-text-input').forEach(i => i.value='');
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('textarea').forEach(t => t.value='');
+    document.querySelectorAll('.print-option').forEach((o,i,arr) => { if(i===0) o.classList.add('active'); else o.classList.remove('active'); });
+    ['f-nombre','f-email','f-tel','f-notas'].forEach(id => document.getElementById(id).value='');
 
     addNotif('Pedido '+order.id+' creado', nombre);
+
+    const prodSummary = productsDetail.map(p => {
+      const sizesStr = Object.entries(p.sizes).map(([k,v])=>`${k}:${v}`).join(', ');
+      return `• <strong>${p.name}</strong> — ${sizesStr || 'talla no especificada'} | ${p.color||'—'} | ${p.print||'—'}`;
+    }).join('<br>');
+
     document.getElementById('successBody').innerHTML = `
       Tu pedido <strong>${order.id}</strong> fue registrado exitosamente.<br><br>
-      📧 Te mandamos un email de confirmación a <strong>${email}</strong>.<br><br>
-      📅 Fecha estimada de entrega: <strong>${fechaEntrega}</strong><br><br>
-      Puedes seguir el estado de tu orden en la sección <em>Mis Pedidos</em>.`;
+      ${prodSummary}<br><br>
+      📧 Te mandamos un email de confirmación a <strong>${email}</strong>.<br>
+      📅 Entrega estimada: <strong>${fechaEntrega}</strong><br><br>
+      Puedes seguir el estado en <em>Mis Pedidos</em>.`;
     document.getElementById('successModal').classList.add('open');
+    updateTotal();
   } catch(e) {
-    showToast('❌ Error', 'No se pudo enviar el pedido. Intenta de nuevo.');
+    showToast('❌ Error','No se pudo enviar el pedido. Intenta de nuevo.');
   } finally {
-    btn.textContent = '→ ENVIAR PEDIDO'; btn.disabled = false;
+    btn.textContent='→ ENVIAR PEDIDO'; btn.disabled=false;
   }
 }
-function gv(id) { return document.getElementById(id).value || 0; }
 
 function closeSuccessModal() {
   document.getElementById('successModal').classList.remove('open');
   showPage('seguimiento', document.querySelectorAll('.nav-tab')[2]);
 }
 
+// ── ORDER CARD
 function orderCard(order, isAdmin) {
   const si = STAGES.indexOf(order.stage);
   const steps = STAGES.map((s,i) => `
-    ${i>0 ? `<div class="step-line ${i<=si?'done':''}"></div>` : ''}
+    ${i>0?`<div class="step-line ${i<=si?'done':''}"></div>`:''}
     <div class="step ${i<si?'done':''} ${i===si?'current':''}">
       <div class="step-circle">${i<si?'✓':i+1}</div>
       <div class="step-info"><span class="step-label">${STAGE_LABELS[s]}</span><span class="step-desc">${STAGE_ICONS[s]}</span></div>
     </div>`).join('');
 
-  const qty = typeof order.qty === 'object' ? order.qty : {};
-  const qtyStr = Object.entries(qty).filter(([,v])=>v>0).map(([k,v])=>k+':'+v).join(' · ') || '—';
+  const qty = typeof order.qty==='object'?order.qty:{};
+  const qtyStr = Object.entries(qty).filter(([,v])=>v>0).map(([k,v])=>k+':'+v).join(' · ')||'—';
   const badge = `<span class="order-badge badge-${order.stage}">${STAGE_LABELS[order.stage].toUpperCase()}</span>`;
-  const advBtn = !isAdmin ? '' : order.stage !== 'despacho'
-    ? `<button class="advance-btn" onclick="advanceOrder('${order.id}')">Avanzar etapa →</button>`
-    : `<span style="font-size:11px;color:var(--success);font-family:'Space Mono',monospace;">✓ ENTREGADO</span>`;
+  const advBtn = !isAdmin?'':order.stage!=='despacho'
+    ?`<button class="advance-btn" onclick="advanceOrder('${order.id}')">Avanzar etapa →</button>`
+    :`<span style="font-size:11px;color:var(--success);font-family:'Space Mono',monospace;">✓ ENTREGADO</span>`;
 
   return `
   <div class="order-row">
@@ -569,48 +1027,52 @@ function orderCard(order, isAdmin) {
 }
 
 async function loadOrders() {
-  const q = document.getElementById('searchInput')?.value || '';
-  const stage = document.getElementById('filterStatus')?.value || '';
+  const q = document.getElementById('searchInput')?.value||'';
+  const stage = document.getElementById('filterStatus')?.value||'';
   const list = document.getElementById('ordersList');
-  list.innerHTML = '<div class="loading"><span class="spinner"></span>Cargando...</div>';
+  list.innerHTML='<div class="loading"><span class="spinner"></span>Cargando...</div>';
   try {
     const res = await fetch(`/api/orders/search?q=${encodeURIComponent(q)}&stage=${stage}`);
     const orders = await res.json();
-    list.innerHTML = orders.length ? orders.map(o => orderCard(o, false)).join('') : '<p style="color:var(--muted);font-size:13px;">No se encontraron pedidos.</p>';
-  } catch { list.innerHTML = '<p style="color:var(--muted);">Error cargando pedidos.</p>'; }
+    list.innerHTML = orders.length?orders.map(o=>orderCard(o,false)).join(''):'<p style="color:var(--muted);font-size:13px;">No se encontraron pedidos.</p>';
+  } catch { list.innerHTML='<p style="color:var(--muted);">Error cargando pedidos.</p>'; }
 }
 
 async function loadAdminOrders() {
   const list = document.getElementById('adminOrdersList');
-  list.innerHTML = '<div class="loading"><span class="spinner"></span>Cargando...</div>';
+  list.innerHTML='<div class="loading"><span class="spinner"></span>Cargando...</div>';
   try {
     const res = await fetch('/api/orders');
     const orders = await res.json();
-    document.getElementById('st-total').textContent = orders.length;
-    document.getElementById('st-rec').textContent   = orders.filter(o=>o.stage==='recibido').length;
-    document.getElementById('st-prod').textContent  = orders.filter(o=>o.stage==='proceso'||o.stage==='terminacion').length;
-    document.getElementById('st-dep').textContent   = orders.filter(o=>o.stage==='despacho').length;
-    list.innerHTML = orders.length ? orders.map(o => orderCard(o, true)).join('') : '<p style="color:var(--muted);font-size:13px;">Sin órdenes todavía.</p>';
-  } catch { list.innerHTML = '<p style="color:var(--muted);">Error cargando órdenes.</p>'; }
+    document.getElementById('st-total').textContent=orders.length;
+    document.getElementById('st-rec').textContent=orders.filter(o=>o.stage==='recibido').length;
+    document.getElementById('st-prod').textContent=orders.filter(o=>o.stage==='proceso'||o.stage==='terminacion').length;
+    document.getElementById('st-dep').textContent=orders.filter(o=>o.stage==='despacho').length;
+    list.innerHTML=orders.length?orders.map(o=>orderCard(o,true)).join(''):'<p style="color:var(--muted);font-size:13px;">Sin órdenes todavía.</p>';
+  } catch { list.innerHTML='<p style="color:var(--muted);">Error cargando órdenes.</p>'; }
 }
 
 async function advanceOrder(orderId) {
   const pin = prompt('Confirma con tu PIN de admin:');
   if (!pin) return;
   try {
-    const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/advance`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pin})
+    const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/advance`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})
     });
-    if (!res.ok) { showToast('❌ Error', 'PIN incorrecto o error del servidor.'); return; }
+    if (!res.ok) { showToast('❌ Error','PIN incorrecto o error del servidor.'); return; }
     const order = await res.json();
     addNotif(orderId+' → '+STAGE_LABELS[order.stage], order.client+' — Email enviado ✓');
-    showToast('✅ Etapa avanzada', `${orderId} → ${STAGE_LABELS[order.stage]} · Email enviado a ${order.email}`);
+    showToast('✅ Etapa avanzada',`${orderId} → ${STAGE_LABELS[order.stage]} · Email enviado a ${order.email}`);
     loadAdminOrders();
-  } catch { showToast('❌ Error', 'No se pudo avanzar la etapa.'); }
+  } catch { showToast('❌ Error','No se pudo avanzar la etapa.'); }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('fechaEntrega');
+  if (el) el.textContent = calcDeliveryDate();
+});
 document.addEventListener('click', e => {
-  if (!e.target.closest('#notifPanel') && !e.target.closest('#bellBtn'))
+  if (!e.target.closest('#notifPanel')&&!e.target.closest('#bellBtn'))
     document.getElementById('notifPanel').classList.remove('open');
 });
 </script>
